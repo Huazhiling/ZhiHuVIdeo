@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.Handler
 import android.view.*
 import com.blankj.utilcode.util.ConvertUtils
+import com.blankj.utilcode.util.LogUtils
 import com.example.mvc.intercept_video_link.R
 import com.example.mvc.intercept_video_link.activity.MainActivity
 import com.example.mvc.intercept_video_link.listener.ParsingCallback
@@ -48,7 +49,7 @@ class UrlService : Service() {
     }
 
     private fun createZhihuVideoHint() {
-        if (windowMap[ZHIHU_VIEW] == null) {
+        if (windowMap[ZHIHU_VIEW] === null) {
             zhihuView = LayoutInflater.from(applicationContext).inflate(R.layout.layout_window_hint, null)
             toastLayoutParams = WindowManager.LayoutParams()
             toastLayoutParams.gravity = Gravity.RIGHT or Gravity.TOP
@@ -70,13 +71,14 @@ class UrlService : Service() {
                 handler.removeCallbacks(run)
             }
         }
-        windowManager.addView(zhihuView, toastLayoutParams)
+        LogUtils.e(windowMap[ZHIHU_VIEW])
+        windowManager.addView(windowMap[ZHIHU_VIEW], toastLayoutParams)
         handler.postDelayed(run, 3000)
     }
 
     private fun removeZhihuView() {
         if (windowMap[ZHIHU_VIEW] !== null) {
-            windowManager.removeView(zhihuView)
+            windowManager.removeView(windowMap[ZHIHU_VIEW])
         }
     }
 
