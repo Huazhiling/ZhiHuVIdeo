@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorWhite"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:background="@color/colorWhite"
     android:orientation="vertical"
     tools:context=".activity.MainActivity">
 
@@ -42,12 +42,12 @@
             android:id="@+id/search_submit"
             android:layout_width="80dp"
             android:layout_height="35dp"
-            android:onClick="onClick"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:background="@drawable/shape_submit"
             android:foreground="@drawable/ripple_view"
             android:gravity="center"
+            android:onClick="onClick"
             android:text="搜索"
             android:textColor="@color/colorWhite" />
     </LinearLayout>
@@ -68,10 +68,19 @@
             android:scaleType="center"
             android:src="@drawable/nothing_icon" />
 
+        <TextView
+            android:id="@+id/video_load"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            android:gravity="center"
+            android:text="加载中..."
+            android:textSize="19sp" />
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/video_list"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
     </FrameLayout>
 </LinearLayout>

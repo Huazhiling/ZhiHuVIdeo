@@ -1,14 +1,16 @@
 package com.example.mvc.intercept_video_link.activity
 
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
+import android.net.Uri
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.IBinder
+import android.provider.Settings
+import android.support.v7.app.AlertDialog
 import android.view.View
 import com.blankj.utilcode.util.LogUtils
+import com.blankj.utilcode.util.SPUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.example.mvc.intercept_video_link.listener.ParsingCallback
 import com.example.mvc.intercept_video_link.R
@@ -43,6 +45,21 @@ class MainActivity : AppCompatActivity() {
         var bindIntent = intent
         bindIntent.setClass(this, UrlService::class.java)
         bindService(bindIntent, urlConnection, Context.BIND_AUTO_CREATE)
+//        检查悬浮窗权限
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                AlertDialog.Builder(this)
+                        .setTitle("请求开启权限")
+                        .setMessage("开启悬浮窗权限之后能够更方便的获取到知乎视频\n建议开启")
+                        .setNegativeButton("取消") { dialog, which -> dialog.dismiss() }
+                        .setPositiveButton("开启") { dialog, which ->
+                            dialog.dismiss()
+                            var intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+                            startActivityForResult(intent, 200)
+                        }
+                        .show()
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -97,6 +114,9 @@ class MainActivity : AppCompatActivity() {
                     return
                 }
                 videoInfo.clear()
+                video_load.visibility = View.VISIBLE
+                video_null.visibility = View.INVISIBLE
+                video_list.visibility = View.INVISIBLE
                 Observable.just(content)
                         .subscribeOn(Schedulers.io())
                         .flatMap {
@@ -114,9 +134,11 @@ class MainActivity : AppCompatActivity() {
                             if (videoInfo.size > 0) {
                                 adapter.notifyDataSetChanged()
                                 video_null.visibility = View.INVISIBLE
+                                video_load.visibility = View.INVISIBLE
                                 video_list.visibility = View.VISIBLE
                             } else {
                                 video_null.visibility = View.VISIBLE
+                                video_load.visibility = View.INVISIBLE
                                 video_list.visibility = View.INVISIBLE
                             }
                         }, { thorw ->
