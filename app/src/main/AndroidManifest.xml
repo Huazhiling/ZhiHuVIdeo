@@ -38,7 +38,7 @@
         <activity android:name=".activity.WebVideoActivity" />
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="${applicationId}.download.file.provider"
+            android:authorities="com.example.mvc.intercept_video_link.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

@@ -90,7 +90,7 @@ class DownloadService : IntentService("download") {
             builder = NotificationCompat.Builder(baseContext)
         }
         val msgIntent = Intent(Intent.ACTION_VIEW)
-        val uri = FileProvider.getUriForFile(baseContext, ".download.file", videoFile)
+        val uri = FileProvider.getUriForFile(baseContext, MyApplication.getAppContext()?.packageName + ".fileprovider", videoFile)
         msgIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         msgIntent.setDataAndType(uri, "video/*")
         val mPendingIntent = PendingIntent.getActivity(baseContext, 1, msgIntent, PendingIntent.FLAG_CANCEL_CURRENT)
