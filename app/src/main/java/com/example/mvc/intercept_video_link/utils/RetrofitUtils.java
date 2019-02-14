@@ -39,8 +39,8 @@ public class RetrofitUtils {
 
     private static OkHttpClient getOkhttpUtils() {
         OkHttpClient client = new OkHttpClient.Builder()
-//                .addInterceptor(new HttpLoggingInterceptor(message -> LogUtils.e("RetrofitUtils", message))
-//                        .setLevel(HttpLoggingInterceptor.Level.BODY))
+                .addInterceptor(new HttpLoggingInterceptor(message -> LogUtils.e("RetrofitUtils", message))
+                        .setLevel(HttpLoggingInterceptor.Level.BODY))
                 .addInterceptor(chain -> {
                     Response proceed = chain.proceed(chain.request());
                     assert proceed.body() != null;

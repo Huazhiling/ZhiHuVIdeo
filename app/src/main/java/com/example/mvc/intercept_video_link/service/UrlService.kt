@@ -48,7 +48,7 @@ class UrlService : Service() {
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
     }
 
-    private fun createZhihuVideoHint() {
+    fun createZhihuVideoHint() {
         if (windowMap[ZHIHU_VIEW] === null) {
             zhihuView = LayoutInflater.from(applicationContext).inflate(R.layout.layout_window_hint, null)
             toastLayoutParams = WindowManager.LayoutParams()
@@ -101,7 +101,6 @@ class UrlService : Service() {
                 }
                 utlSb.append(primary)
                 parCallback.AnalysisSourceCode(utlSb.toString())
-                createZhihuVideoHint()
             } else {
 //                复制的空字符串  不给解析
             }

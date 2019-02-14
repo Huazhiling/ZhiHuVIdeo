@@ -68,12 +68,8 @@ class WebVideoActivity : AppCompatActivity() {
     private fun downloadVideo(url: String?, userAgent: String?, contentDisposition: String?, mimetype: String?, contentLength: Long) {
         var sb = StringBuffer()
         var now = Date()
-        var dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-        if (video_title == "") {
-            sb.append("知乎${dateFormat.format(now)}")
-        } else {
-            sb.append("${"知乎"} $video_title ${dateFormat.format(now)}")
-        }
+        var dateFormat = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss")
+        sb.append("Zhihu_${dateFormat.format(now)}")
         var download = Intent(baseContext, DownloadService::class.java)
         download.putExtra("url", url)
         download.putExtra("title", sb.toString())
