@@ -125,7 +125,6 @@ class MainActivity : AppCompatActivity() {
                             var inStream = conn.inputStream
                             var htmlSourceCode = String(inStream.readBytes())
                             var videoList = JsoupHelper.getInstance(htmlSourceCode).getAllResource()
-                            LogUtils.e(videoList.size)
                             Observable.just(videoList)
                         }
                         .observeOn(AndroidSchedulers.mainThread())

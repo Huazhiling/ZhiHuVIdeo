@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.os.Environment
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.FileProvider
@@ -13,7 +14,6 @@ import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.example.mvc.intercept_video_link.MyApplication
 import com.example.mvc.intercept_video_link.R
-import com.example.mvc.intercept_video_link.activity.MainActivity
 import com.example.mvc.intercept_video_link.listener.ApiStore
 import com.example.mvc.intercept_video_link.utils.RetrofitUtils
 import io.reactivex.Observable
@@ -44,7 +44,7 @@ class DownloadService : IntentService("download") {
                         ToastUtils.showShort("下载完成，存放目录在：${videoFile.path}")
                         createNotification("下载成功", videoFile.path)
                         val contentUri = Uri.fromFile(videoFile)
-                        val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,contentUri)
+                        val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, contentUri)
                         sendBroadcast(mediaScanIntent)
                     }
                 }, {
@@ -67,8 +67,9 @@ class DownloadService : IntentService("download") {
                     break
                 }
                 ops.write(byte, 0, read)
+                ops.flush()
             }
-            ops.flush()
+            LogUtils.e("${videoFile.canRead()} ${videoFile.isHidden} ${videoFile.isRooted}")
             return true
         } catch (e: IOException) {
             LogUtils.e(e.message)
@@ -117,4 +118,5 @@ class DownloadService : IntentService("download") {
                 .setSmallIcon(R.mipmap.ic_launcher)
         nm.notify(0, builder.build())
     }
+
 }

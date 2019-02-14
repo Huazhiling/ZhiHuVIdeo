@@ -71,7 +71,6 @@ class UrlService : Service() {
                 handler.removeCallbacks(run)
             }
         }
-        LogUtils.e(windowMap[ZHIHU_VIEW])
         windowManager.addView(windowMap[ZHIHU_VIEW], toastLayoutParams)
         handler.postDelayed(run, 3000)
     }
@@ -96,13 +95,15 @@ class UrlService : Service() {
         clipManager.addPrimaryClipChangedListener {
             var utlSb = StringBuffer()
             var primary = clipManager.primaryClip.getItemAt(0).text.toString()
-            if (!primary.substring(0, 8).toLowerCase().contains("https://") && !primary.substring(0, 8).toLowerCase().contains("http://")) {
-                utlSb.append("http://")
-            }
-            utlSb.append(primary)
-            if (PatternHelper.isHttpUrl(utlSb.toString())) {
+            if (primary != "" && PatternHelper.isHttpUrl(primary)) {
+                if (!primary.substring(0, 8).toLowerCase().contains("https://") && !primary.substring(0, 8).toLowerCase().contains("http://")) {
+                    utlSb.append("http://")
+                }
+                utlSb.append(primary)
                 parCallback.AnalysisSourceCode(utlSb.toString())
                 createZhihuVideoHint()
+            } else {
+//                复制的空字符串  不给解析
             }
         }
     }
