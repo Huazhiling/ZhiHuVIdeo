@@ -50,7 +50,7 @@ class WebVideoActivity : AppCompatActivity() {
                 }
 
                 override fun success(i: Int) {
-                    var videoFile = File("${Environment.getExternalStorageDirectory().path}/ZhiHuVideo/")
+                    var videoFile = File("${Environment.getExternalStorageDirectory().absolutePath}/ZhiHuVideo/")
                     if (!videoFile.exists()) {
                         videoFile.mkdirs()
                     }

@@ -32,7 +32,7 @@ class DownloadService : IntentService("download") {
         var title = intent?.getStringExtra("title")
         var url = intent?.getStringExtra("url")?.replace(MyApplication.getBaseUrl(), "")
         nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        videoFile = File("${Environment.getExternalStorageDirectory().path}/ZhiHuVideo/", "$title.mp4")
+        videoFile = File("${Environment.getExternalStorageDirectory().absolutePath}/ZhiHuVideo/", "$title.mp4")
         ToastUtils.showShort("正在下载")
         RetrofitUtils.client(ApiStore::class.java).downloadVideo(url!!)
                 .subscribeOn(Schedulers.io())
@@ -43,9 +43,9 @@ class DownloadService : IntentService("download") {
                     if (isSave) {
                         ToastUtils.showShort("下载完成，存放目录在：${videoFile.path}")
                         createNotification("下载成功", videoFile.path)
-                        val contentUri = Uri.fromFile(videoFile)
-                        val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, contentUri)
-                        sendBroadcast(mediaScanIntent)
+//                        val contentUri = Uri.fromFile(videoFile)
+//                        val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, contentUri)
+//                        sendBroadcast(mediaScanIntent)
                     }
                 }, {
                     LogUtils.e(it.message)
@@ -58,18 +58,17 @@ class DownloadService : IntentService("download") {
         var ips: InputStream? = null
         var ops: OutputStream? = null
         try {
-            var byte = ByteArray(2048)
+            videoFile.createNewFile()
+            var byte = ByteArray(1024)
             ips = strem.byteStream()
             ops = FileOutputStream(videoFile)
             while (true) {
                 var read = ips.read(byte)
-                if (read == -1) {
+                if (read === -1) {
                     break
                 }
                 ops.write(byte, 0, read)
-                ops.flush()
             }
-            LogUtils.e("${videoFile.canRead()} ${videoFile.isHidden} ${videoFile.isRooted}")
             return true
         } catch (e: IOException) {
             LogUtils.e(e.message)
@@ -79,6 +78,7 @@ class DownloadService : IntentService("download") {
                 ips.close()
             }
             if (ops !== null) {
+                ops.flush()
                 ops.close()
             }
         }
