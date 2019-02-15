@@ -21,6 +21,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.ResponseBody
 import org.json.JSONException
+import retrofit2.http.Url
 import java.io.*
 
 class DownloadService : IntentService("download") {
@@ -32,7 +33,7 @@ class DownloadService : IntentService("download") {
         var title = intent?.getStringExtra("title")
         var url = intent?.getStringExtra("url")?.replace(MyApplication.getBaseUrl(), "")
         nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        videoFile = File("${Environment.getExternalStorageDirectory().absolutePath}/ZhiHuVideo/", "$title.mp4")
+        videoFile = File("${Environment.getExternalStorageDirectory().absolutePath}/ZhiHuVideo/$title.mp4")
         ToastUtils.showShort("正在下载")
         RetrofitUtils.client(ApiStore::class.java).downloadVideo(url!!)
                 .subscribeOn(Schedulers.io())
@@ -41,11 +42,12 @@ class DownloadService : IntentService("download") {
                 }.observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ isSave ->
                     if (isSave) {
-                        ToastUtils.showShort("下载完成，存放目录在：${videoFile.path}")
+                        ToastUtils.showShort("下载完成，视频已放在：${videoFile.path}")
                         createNotification("下载成功", videoFile.path)
-//                        val contentUri = Uri.fromFile(videoFile)
-//                        val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, contentUri)
-//                        sendBroadcast(mediaScanIntent)
+                        var file = File(videoFile.path)
+                        val contentUri = Uri.fromFile(videoFile)
+                        val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, contentUri)
+                        sendBroadcast(mediaScanIntent)
                     }
                 }, {
                     LogUtils.e(it.message)
@@ -55,13 +57,11 @@ class DownloadService : IntentService("download") {
     }
 
     private fun saveVideo(strem: ResponseBody, videoFile: File): Boolean {
-        var ips: InputStream? = null
+        var ips = strem.byteStream()
         var ops: OutputStream? = null
         try {
-            videoFile.createNewFile()
-            var byte = ByteArray(1024)
-            ips = strem.byteStream()
             ops = FileOutputStream(videoFile)
+            var byte = ByteArray(1024)
             while (true) {
                 var read = ips.read(byte)
                 if (read === -1) {
@@ -70,16 +70,19 @@ class DownloadService : IntentService("download") {
                 ops.write(byte, 0, read)
             }
             return true
+        } catch (e: FileNotFoundException) {
+            LogUtils.e(e.message)
+            e.printStackTrace()
+            return false
         } catch (e: IOException) {
             LogUtils.e(e.message)
             return false
         } finally {
+            if (ops !== null) {
+                ops.close()
+            }
             if (ips !== null) {
                 ips.close()
-            }
-            if (ops !== null) {
-                ops.flush()
-                ops.close()
             }
         }
     }

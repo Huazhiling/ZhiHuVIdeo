@@ -33,6 +33,7 @@ import java.net.URL
 class MainActivity : AppCompatActivity() {
     private var urlBind: UrlService.UrlBind? = null
     private var videoInfo = ArrayList<VideoInfo>()
+    private lateinit var urlService : UrlService
     private lateinit var adapter: VideoAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +78,7 @@ class MainActivity : AppCompatActivity() {
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             if (service is UrlService.UrlBind) {
+                urlService = service.getService()
                 adapter = VideoAdapter(R.layout.item_search_list, videoInfo)
                 adapter.setOnItemChildClickListener { adapter, view, position ->
                     when (view.id) {
@@ -135,6 +137,7 @@ class MainActivity : AppCompatActivity() {
                                 video_null.visibility = View.INVISIBLE
                                 video_load.visibility = View.INVISIBLE
                                 video_list.visibility = View.VISIBLE
+                                urlService.createZhihuVideoHint()
                             } else {
                                 video_null.visibility = View.VISIBLE
                                 video_load.visibility = View.INVISIBLE
