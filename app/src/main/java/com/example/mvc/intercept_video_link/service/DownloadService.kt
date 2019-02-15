@@ -44,7 +44,6 @@ class DownloadService : IntentService("download") {
                     if (isSave) {
                         ToastUtils.showShort("下载完成，视频已放在：${videoFile.path}")
                         createNotification("下载成功", videoFile.path)
-                        var file = File(videoFile.path)
                         val contentUri = Uri.fromFile(videoFile)
                         val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, contentUri)
                         sendBroadcast(mediaScanIntent)
