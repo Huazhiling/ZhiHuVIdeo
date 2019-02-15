@@ -10,7 +10,6 @@ import android.provider.Settings
 import android.support.v7.app.AlertDialog
 import android.view.View
 import com.blankj.utilcode.util.LogUtils
-import com.blankj.utilcode.util.SPUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.example.mvc.intercept_video_link.listener.ParsingCallback
 import com.example.mvc.intercept_video_link.R
@@ -22,9 +21,7 @@ import com.example.mvc.intercept_video_link.utils.PatternHelper
 import com.example.mvc.intercept_video_link.utils.RuleRecyclerLines
 import com.gyf.barlibrary.ImmersionBar
 import io.reactivex.Observable
-import io.reactivex.ObservableSource
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import java.net.HttpURLConnection
@@ -33,8 +30,9 @@ import java.net.URL
 class MainActivity : AppCompatActivity() {
     private var urlBind: UrlService.UrlBind? = null
     private var videoInfo = ArrayList<VideoInfo>()
-    private lateinit var urlService : UrlService
+    private lateinit var urlService: UrlService
     private lateinit var adapter: VideoAdapter
+    private lateinit var url: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -96,9 +94,13 @@ class MainActivity : AppCompatActivity() {
                 urlBind!!.getService().setParsingCallback(object : ParsingCallback {
                     override fun AnalysisSourceCode(primary: String) {
                         search_edit.setText(primary)
+                        url = primary
                         search_submit.performClick()
                     }
                 })
+                url = "https://www.zhihu.com/question/267782048/answer/495260282"
+                search_edit.setText(url)
+                search_submit.performClick()
             }
         }
     }
@@ -110,8 +112,7 @@ class MainActivity : AppCompatActivity() {
     fun onClick(view: View) {
         when (view.id) {
             R.id.search_submit -> {
-                var content = search_edit.text.toString()
-                if (!PatternHelper.isHttpUrl(content)) {
+                if (!PatternHelper.isHttpUrl(url)) {
                     ToastUtils.showShort("地址无效")
                     return
                 }
@@ -119,7 +120,7 @@ class MainActivity : AppCompatActivity() {
                 video_load.visibility = View.VISIBLE
                 video_null.visibility = View.INVISIBLE
                 video_list.visibility = View.INVISIBLE
-                Observable.just(content)
+                Observable.just(url)
                         .subscribeOn(Schedulers.io())
                         .flatMap {
                             var httpUrl = URL(it)
