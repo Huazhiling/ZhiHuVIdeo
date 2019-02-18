@@ -19,7 +19,6 @@ import com.example.mvc.intercept_video_link.bean.VideoInfo
 import com.example.mvc.intercept_video_link.utils.JsoupHelper
 import com.example.mvc.intercept_video_link.utils.PatternHelper
 import com.example.mvc.intercept_video_link.utils.RuleRecyclerLines
-import com.gyf.barlibrary.ImmersionBar
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -27,20 +26,19 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.net.HttpURLConnection
 import java.net.URL
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     private var urlBind: UrlService.UrlBind? = null
     private var videoInfo = ArrayList<VideoInfo>()
     private lateinit var urlService: UrlService
     private lateinit var adapter: VideoAdapter
     private lateinit var url: String
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        initView()
+    override fun getLayoutId(): Int {
+        return R.layout.activity_main
     }
 
-    private fun initView() {
-        ImmersionBar.with(this).statusBarView(R.id.status_bar).statusBarDarkFont(true).init()
+
+    override fun initView() {
+        super.initView()
         var bindIntent = intent
         bindIntent.setClass(this, UrlService::class.java)
         bindService(bindIntent, urlConnection, Context.BIND_AUTO_CREATE)
@@ -59,6 +57,10 @@ class MainActivity : AppCompatActivity() {
                         .show()
             }
         }
+    }
+
+    override fun initData() {
+
     }
 
     override fun onDestroy() {

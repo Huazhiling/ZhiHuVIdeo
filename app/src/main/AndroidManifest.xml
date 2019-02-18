@@ -43,6 +43,8 @@
         <activity
             android:name=".activity.WebVideoActivity"
             android:launchMode="singleTop" />
+        <activity android:name=".activity.ControllerActivity" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.example.mvc.intercept_video_link.fileprovider"
