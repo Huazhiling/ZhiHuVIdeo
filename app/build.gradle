@@ -9,7 +9,7 @@ android {
         config {
             keyAlias 'zhihu'
             keyPassword 'android_wwj'
-            storeFile file('E:/AppProject/ZhihuDownloadVideo/zhihuvideo.jks')
+            storeFile file('E:/App/ZhihuDownloadVideo/zhihuvideo.jks')
             storePassword 'android_wwj'
         }
     }
@@ -48,6 +48,7 @@ dependencies {
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
     //沉浸式状态栏
     implementation 'com.gyf.immersionbar:immersionbar:2.3.3-beta04'
+    implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     implementation 'com.github.Huazhiling:RsPermission:v1.0.7'
     implementation 'com.squareup.retrofit2:retrofit:2.0.0-beta3'

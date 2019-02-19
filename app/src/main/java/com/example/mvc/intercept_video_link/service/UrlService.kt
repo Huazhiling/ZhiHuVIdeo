@@ -57,7 +57,7 @@ class UrlService : Service() {
             } else {
                 toastLayoutParams.type = WindowManager.LayoutParams.TYPE_TOAST
             }
-            toastLayoutParams.flags = WindowManager.LayoutParams.FLAG_FULLSCREEN
+            toastLayoutParams.flags = WindowManager.LayoutParams.FLAG_FULLSCREEN or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
             toastLayoutParams.format = PixelFormat.RGBA_8888
             toastLayoutParams.y = ConvertUtils.dp2px(150f)
             toastLayoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
