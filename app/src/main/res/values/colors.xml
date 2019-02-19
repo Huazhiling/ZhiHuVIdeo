@@ -7,5 +7,8 @@
     <color name="colorBlack">#000000</color>
     <color name="colorGray">#CCDDDDDD</color>
     <color name="edit_gray">#999999</color>
+    <color name="light_grey">#F6F7Fb</color>
+    <color name="black_gray">#595971</color>
+    <color name="select_gray">#7A7A7C</color>
     <color name="window_hint_gray">#99000000</color>
 </resources>

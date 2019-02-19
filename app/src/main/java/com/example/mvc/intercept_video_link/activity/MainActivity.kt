@@ -6,8 +6,6 @@ import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.IBinder
-import android.provider.Settings
-import android.support.v7.app.AlertDialog
 import android.view.View
 import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ToastUtils

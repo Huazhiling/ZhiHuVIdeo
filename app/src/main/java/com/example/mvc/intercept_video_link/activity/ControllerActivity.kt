@@ -1,6 +1,5 @@
 package com.example.mvc.intercept_video_link.activity
 
-import android.Manifest
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -11,18 +10,23 @@ import android.os.IBinder
 import android.provider.Settings
 import android.support.v7.app.AlertDialog
 import android.view.View
+import com.example.mvc.intercept_video_link.MyApplication
 import com.example.mvc.intercept_video_link.R
 import com.example.mvc.intercept_video_link.bean.AppInfo
+import com.example.mvc.intercept_video_link.common.Constant.Language.CHINESE
+import com.example.mvc.intercept_video_link.common.Constant.Language.ENGLISH
+import com.example.mvc.intercept_video_link.event.LanguageEvent
 import com.example.mvc.intercept_video_link.listener.IDialogInterface
 import com.example.mvc.intercept_video_link.listener.ParsingCallback
 import com.example.mvc.intercept_video_link.service.UrlService
 import com.example.mvc.intercept_video_link.utils.DialogHelper
 import kotlinx.android.synthetic.main.activity_controller.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
 class ControllerActivity : BaseActivity() {
     private lateinit var appInfo: AppInfo
     private lateinit var urlService: UrlService
-    private var urlBind: UrlService.UrlBind? = null
 
 
     override fun getLayoutId(): Int {
@@ -31,6 +35,7 @@ class ControllerActivity : BaseActivity() {
 
     override fun initView() {
         super.initView()
+        EventBus.getDefault().register(this)
         var bindIntent = intent
         bindIntent.setClass(this, UrlService::class.java)
         bindService(bindIntent, urlConnection, Context.BIND_AUTO_CREATE)
@@ -56,10 +61,10 @@ class ControllerActivity : BaseActivity() {
                                     startActivityForResult(intent, 300)
                                 }
                                 .show()
-                    }else{
+                    } else {
                         app_backstage.setRightString("已开启")
                     }
-                }else{
+                } else {
                     app_backstage.setRightString("已开启")
                 }
             }
@@ -70,7 +75,7 @@ class ControllerActivity : BaseActivity() {
         when (view.id) {
 //            设置语言
             R.id.app_language -> {
-
+                startActivityForResult(Intent(this@ControllerActivity, LanguageActivity::class.java), 200)
             }
 //            设置主题
             R.id.app_theme -> {
@@ -98,23 +103,23 @@ class ControllerActivity : BaseActivity() {
 
             }
 //            清除缓存
-            R.id.app_clear_cache->{
+            R.id.app_clear_cache -> {
 
             }
         }
     }
 
     override fun onDestroy() {
-        if (urlBind !== null) {
-            urlBind = null
+        if (urlService !== null) {
             unbindService(urlConnection)
         }
+        EventBus.getDefault().unregister(this)
         super.onDestroy()
     }
 
     private var urlConnection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
-            urlBind = null
+
         }
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -129,14 +134,24 @@ class ControllerActivity : BaseActivity() {
         }
     }
 
+    @Subscribe
+    fun resetLanguage(language: LanguageEvent) {
+        if (urlService !== null) {
+            unbindService(urlConnection)
+        }
+        recreate()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        //申请悬浮窗权限
-        if (requestCode === 300) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (!Settings.canDrawOverlays(this@ControllerActivity)) {
-                    app_backstage.setRightString("已关闭")
-                }else{
-                    app_backstage.setRightString("已开启")
+        when (requestCode) {
+            //申请悬浮窗权限
+            300 -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (!Settings.canDrawOverlays(this@ControllerActivity)) {
+                        app_backstage.setRightString("已关闭")
+                    } else {
+                        app_backstage.setRightString("已开启")
+                    }
                 }
             }
         }

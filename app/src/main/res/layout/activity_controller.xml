@@ -35,7 +35,7 @@
         app:sLeftTextString="@string/main_language"
         app:sRightTextColor="@color/edit_gray"
         app:sRightTextSize="11sp"
-        app:sRightTextString="中文" />
+        app:sRightTextString="@string/main_default_language" />
 
     <com.allen.library.SuperTextView
         android:id="@+id/app_theme"

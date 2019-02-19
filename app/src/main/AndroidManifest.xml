@@ -43,7 +43,10 @@
         <activity
             android:name=".activity.WebVideoActivity"
             android:launchMode="singleTop" />
-        <activity android:name=".activity.MainActivity" />
+        <activity
+            android:name=".activity.MainActivity"
+            android:launchMode="singleTop" />
+        <activity android:name=".activity.LanguageActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

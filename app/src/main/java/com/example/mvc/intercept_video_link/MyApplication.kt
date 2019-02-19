@@ -12,6 +12,7 @@ import java.util.ArrayList
 
 class MyApplication : Application() {
 
+    private lateinit var appInfo: AppInfo
     override fun onCreate() {
         super.onCreate()
         Utils.init(this)
@@ -35,31 +36,34 @@ class MyApplication : Application() {
             themeList.add(AppInfo.AppInfoBean.ThemeBean("炫酷黑", "Cool Black"))
             var appInfoBean = AppInfo.AppInfoBean(getString(R.string.main_title)
                     , getString(R.string.main_default_theme)
-                    , getString(R.string.main_default_language)
+                    , "zh_CN"
                     , false/*默认权限不开启*/
                     , languageList
                     , themeList)
-            var appContentBean = AppInfo.AppContentBean(getString(R.string.data_title)
+            var appContentBean = AppInfo.AppDataBeanBean(getString(R.string.data_title)
                     , getString(R.string.data_current_record)
                     , getString(R.string.data_history)
                     , getString(R.string.data_download))
             appInfo = AppInfo(appInfoBean, appContentBean)
-            SPUtils.getInstance().put(APPINFO, JsonHelper.jsonToString(appInfoBean))
+            SPUtils.getInstance().put(APPINFO, JsonHelper.jsonToString(appInfo))
         } else {
             appInfo = JsonHelper.stringToJson(app, AppInfo::class.java) as AppInfo
+            JsonHelper.jsonToString(appInfo)
         }
+        LogUtils.e("$app  $appInfo ")
+    }
+
+    fun getAppInfo(): AppInfo {
+        return appInfo
     }
 
     companion object {
-        private var application: Context? = null
-        private lateinit var appInfo: AppInfo
-        fun getAppContext(): Context? {
+        private lateinit var application: Application
+        fun getAppContext(): Application {
+            LogUtils.e(application)
             return application
         }
 
-        fun getAppInfo(): AppInfo? {
-            return appInfo
-        }
 
         fun getBaseUrl(): String {
             return getAppContext()!!.getString(R.string.base_url)

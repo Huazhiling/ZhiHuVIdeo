@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_grey"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/status_bar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/white" />
+
+    <RelativeLayout
+        android:id="@+id/about_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_below="@id/status_bar"
+        android:background="@color/white">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/main_language"
+            android:textColor="@color/black_gray"
+            android:textSize="17sp" />
+
+        <ImageView
+            android:id="@+id/language_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="6dp"
+            android:scaleType="center"
+            android:src="@drawable/back_icon_black" />
+    </RelativeLayout>
+
+    <com.allen.library.SuperTextView
+        android:id="@+id/switch_china"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="12dp"
+        app:sLeftTextColor="@color/select_gray"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        app:sLeftTextString="中文"
+        app:sRightIconRes="@drawable/language_selected_icon" />
+
+    <com.allen.library.SuperTextView
+        android:id="@+id/switch_english"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        app:sDividerLineHeight="0dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        app:sLeftTextColor="@color/select_gray"
+        app:sLeftTextString="English"
+        app:sRightIconRes="@drawable/language_unselected_icon" />
+</LinearLayout>
