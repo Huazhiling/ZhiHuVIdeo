@@ -24,7 +24,6 @@ class UrlService : Service() {
     companion object {
         private val ZHIHU_VIEW = "zhihu_hint"
     }
-
     private var urlBind = UrlBind()
     private lateinit var am: ActivityManager
     private lateinit var clipManager: ClipboardManager

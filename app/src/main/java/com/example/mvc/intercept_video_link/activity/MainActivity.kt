@@ -42,21 +42,6 @@ class MainActivity : BaseActivity() {
         var bindIntent = intent
         bindIntent.setClass(this, UrlService::class.java)
         bindService(bindIntent, urlConnection, Context.BIND_AUTO_CREATE)
-//        检查悬浮窗权限
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(this)) {
-                AlertDialog.Builder(this)
-                        .setTitle("请求开启权限")
-                        .setMessage("开启悬浮窗权限之后能够更方便的获取到知乎视频\n建议开启")
-                        .setNegativeButton("取消") { dialog, which -> dialog.dismiss() }
-                        .setPositiveButton("开启") { dialog, which ->
-                            dialog.dismiss()
-                            var intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
-                            startActivityForResult(intent, 200)
-                        }
-                        .show()
-            }
-        }
     }
 
     override fun initData() {
@@ -93,7 +78,7 @@ class MainActivity : BaseActivity() {
                 video_list.addItemDecoration(RuleRecyclerLines(this@MainActivity.applicationContext, RuleRecyclerLines.HORIZONTAL_LIST, 1))
                 video_list.adapter = adapter
                 urlBind = service
-                urlBind!!.getService().setParsingCallback(object : ParsingCallback {
+                urlService.setParsingCallback(object : ParsingCallback {
                     override fun AnalysisSourceCode(primary: String) {
                         search_edit.setText(primary)
                         url = primary

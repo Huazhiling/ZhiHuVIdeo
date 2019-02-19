@@ -1,14 +1,144 @@
 package com.example.mvc.intercept_video_link.activity
 
+import android.Manifest
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.net.Uri
+import android.os.Build
+import android.os.IBinder
+import android.provider.Settings
+import android.support.v7.app.AlertDialog
+import android.view.View
 import com.example.mvc.intercept_video_link.R
+import com.example.mvc.intercept_video_link.bean.AppInfo
+import com.example.mvc.intercept_video_link.listener.IDialogInterface
+import com.example.mvc.intercept_video_link.listener.ParsingCallback
+import com.example.mvc.intercept_video_link.service.UrlService
+import com.example.mvc.intercept_video_link.utils.DialogHelper
+import kotlinx.android.synthetic.main.activity_controller.*
 
 class ControllerActivity : BaseActivity() {
+    private lateinit var appInfo: AppInfo
+    private lateinit var urlService: UrlService
+    private var urlBind: UrlService.UrlBind? = null
+
+
     override fun getLayoutId(): Int {
         return R.layout.activity_controller
     }
 
-    override fun initData() {
-
+    override fun initView() {
+        super.initView()
+        var bindIntent = intent
+        bindIntent.setClass(this, UrlService::class.java)
+        bindService(bindIntent, urlConnection, Context.BIND_AUTO_CREATE)
     }
 
+    override fun initData() {
+        DialogHelper.getInstance().createHintDialog(this, getString(R.string.app_help), getString(R.string.app_dialog_title), object : IDialogInterface {
+            override fun clickCallback(view: View) {
+
+            }
+
+            override fun dismissCallback() {
+                //检查悬浮窗权限
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (!Settings.canDrawOverlays(this@ControllerActivity)) {
+                        AlertDialog.Builder(this@ControllerActivity)
+                                .setTitle("请求开启权限")
+                                .setMessage("开启悬浮窗权限之后能够更方便的获取到知乎视频\n建议开启")
+                                .setNegativeButton("取消") { dialog, which -> dialog.dismiss() }
+                                .setPositiveButton("开启") { dialog, which ->
+                                    dialog.dismiss()
+                                    var intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+                                    startActivityForResult(intent, 300)
+                                }
+                                .show()
+                    }else{
+                        app_backstage.setRightString("已开启")
+                    }
+                }else{
+                    app_backstage.setRightString("已开启")
+                }
+            }
+        }).show()
+    }
+
+    fun onClick(view: View) {
+        when (view.id) {
+//            设置语言
+            R.id.app_language -> {
+
+            }
+//            设置主题
+            R.id.app_theme -> {
+
+            }
+//            设置悬浮窗
+            R.id.app_backstage -> {
+                var intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+                startActivityForResult(intent, 300)
+            }
+//            查看当前
+            R.id.app_current_record -> {
+
+            }
+//            查看历史
+            R.id.app_history_record -> {
+
+            }
+//            删除下载
+            R.id.app_delete_download -> {
+
+            }
+//            打开下载
+            R.id.app_open_download -> {
+
+            }
+//            清除缓存
+            R.id.app_clear_cache->{
+
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        if (urlBind !== null) {
+            urlBind = null
+            unbindService(urlConnection)
+        }
+        super.onDestroy()
+    }
+
+    private var urlConnection = object : ServiceConnection {
+        override fun onServiceDisconnected(name: ComponentName?) {
+            urlBind = null
+        }
+
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            if (service is UrlService.UrlBind) {
+                urlService = service.getService()
+                urlService.setParsingCallback(object : ParsingCallback {
+                    override fun AnalysisSourceCode(primary: String) {
+                        urlService.createZhihuVideoHint()
+                    }
+                })
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        //申请悬浮窗权限
+        if (requestCode === 300) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!Settings.canDrawOverlays(this@ControllerActivity)) {
+                    app_backstage.setRightString("已关闭")
+                }else{
+                    app_backstage.setRightString("已开启")
+                }
+            }
+        }
+    }
 }

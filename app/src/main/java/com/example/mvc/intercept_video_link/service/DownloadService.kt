@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import android.os.Environment
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.FileProvider
@@ -21,7 +20,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.ResponseBody
 import org.json.JSONException
-import retrofit2.http.Url
 import java.io.*
 
 class DownloadService : IntentService("download") {
@@ -117,7 +115,7 @@ class DownloadService : IntentService("download") {
                 //使用当前的用户默认设置
                 .setDefaults(Notification.DEFAULT_VIBRATE)
                 //设置通知小ICON(应用默认图标)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.mipmap.ic_icon)
         nm.notify(0, builder.build())
     }
 

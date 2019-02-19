@@ -1,4 +1,19 @@
 <resources>
     <string name="app_name">狐Video</string>
     <string name="base_url">https://vdn2.vzuu.com/</string>
+    <string name="app_dialog_title">狐Video使用指南</string>
+    <string name="app_help">第一步：打开狐Video\n第二步：打开知乎App（打开知乎网站）\n第三步：复制带有视频的帖子链接\n第四步：返回狐Video，选择喜欢的视频下载</string>
+    <!--主页信息-->
+    <string name="main_title">设置</string>
+    <string name="main_language">语言</string>
+    <string name="main_theme">主题</string>
+    <string name="main_service">后台监听服务</string>
+    <string name="main_default_theme">极简白</string>
+    <string name="main_default_language">简体中文</string>
+    <string name="data_title">数据中心</string>
+    <string name="data_current_record">当前记录</string>
+    <string name="data_history">历史记录</string>
+    <string name="data_delete_download">删除下载视频</string>
+    <string name="data_download">打开下载目录</string>
+    <string name="data_clear_cache">清空数据缓存</string>
 </resources>
