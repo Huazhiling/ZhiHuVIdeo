@@ -10,11 +10,9 @@ import android.os.IBinder
 import android.provider.Settings
 import android.support.v7.app.AlertDialog
 import android.view.View
-import com.example.mvc.intercept_video_link.MyApplication
+import com.blankj.utilcode.util.ToastUtils
 import com.example.mvc.intercept_video_link.R
 import com.example.mvc.intercept_video_link.bean.AppInfo
-import com.example.mvc.intercept_video_link.common.Constant.Language.CHINESE
-import com.example.mvc.intercept_video_link.common.Constant.Language.ENGLISH
 import com.example.mvc.intercept_video_link.event.LanguageEvent
 import com.example.mvc.intercept_video_link.listener.IDialogInterface
 import com.example.mvc.intercept_video_link.listener.ParsingCallback
@@ -46,7 +44,6 @@ class ControllerActivity : BaseActivity() {
             override fun clickCallback(view: View) {
 
             }
-
             override fun dismissCallback() {
                 //检查悬浮窗权限
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -79,7 +76,7 @@ class ControllerActivity : BaseActivity() {
             }
 //            设置主题
             R.id.app_theme -> {
-
+                ToastUtils.showShort("暂未开放")
             }
 //            设置悬浮窗
             R.id.app_backstage -> {
@@ -127,7 +124,7 @@ class ControllerActivity : BaseActivity() {
                 urlService = service.getService()
                 urlService.setParsingCallback(object : ParsingCallback {
                     override fun AnalysisSourceCode(primary: String) {
-                        urlService.createZhihuVideoHint()
+                        urlService.createLoadView()
                     }
                 })
             }

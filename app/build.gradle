@@ -9,7 +9,7 @@ android {
         config {
             keyAlias 'zhihu'
             keyPassword 'android_wwj'
-            storeFile file('E:/App/ZhihuDownloadVideo/zhihuvideo.jks')
+            storeFile file('E:/AppProject/ZhihuDownloadVideo/zhihuvideo.jks')
             storePassword 'android_wwj'
         }
     }

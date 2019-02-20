@@ -13,23 +13,27 @@ import android.os.Build
 import android.os.Handler
 import android.view.*
 import com.blankj.utilcode.util.ConvertUtils
-import com.blankj.utilcode.util.LogUtils
 import com.example.mvc.intercept_video_link.R
 import com.example.mvc.intercept_video_link.activity.MainActivity
 import com.example.mvc.intercept_video_link.listener.ParsingCallback
 import com.example.mvc.intercept_video_link.utils.PatternHelper
+import kotlinx.android.synthetic.main.layout_window_hint.view.*
 
 
 class UrlService : Service() {
     companion object {
-        private val ZHIHU_VIEW = "zhihu_hint"
+        private val LOAD_VIEW = "load_hint"
+        private val DOWNLOAD_VIEW = "download_hint"
     }
+
     private var urlBind = UrlBind()
     private lateinit var am: ActivityManager
     private lateinit var clipManager: ClipboardManager
     private lateinit var windowManager: WindowManager
-    private lateinit var toastLayoutParams: WindowManager.LayoutParams
-    private lateinit var zhihuView: View
+    private lateinit var loadLayoutParams: WindowManager.LayoutParams
+    private lateinit var downloadLayoutParams: WindowManager.LayoutParams
+    private lateinit var loadView: View
+    private lateinit var downloadView: View
     private lateinit var parCallback: ParsingCallback
     private var windowMap = HashMap<String, View>()
     private var handler = Handler()
@@ -47,36 +51,61 @@ class UrlService : Service() {
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
     }
 
-    fun createZhihuVideoHint() {
-        if (windowMap[ZHIHU_VIEW] === null) {
-            zhihuView = LayoutInflater.from(applicationContext).inflate(R.layout.layout_window_hint, null)
-            toastLayoutParams = WindowManager.LayoutParams()
-            toastLayoutParams.gravity = Gravity.RIGHT or Gravity.TOP
+    fun createLoadView() {
+        if (windowMap[LOAD_VIEW] === null) {
+            loadView = LayoutInflater.from(applicationContext).inflate(R.layout.layout_window_load, null)
+            loadLayoutParams = WindowManager.LayoutParams()
+            loadLayoutParams.gravity = Gravity.RIGHT or Gravity.TOP
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                toastLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+                loadLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
             } else {
-                toastLayoutParams.type = WindowManager.LayoutParams.TYPE_TOAST
+                loadLayoutParams.type = WindowManager.LayoutParams.TYPE_TOAST
             }
-            toastLayoutParams.flags = WindowManager.LayoutParams.FLAG_FULLSCREEN or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
-            toastLayoutParams.format = PixelFormat.RGBA_8888
-            toastLayoutParams.y = ConvertUtils.dp2px(150f)
-            toastLayoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
-            toastLayoutParams.height = ConvertUtils.dp2px(50f)
-            toastLayoutParams.windowAnimations = android.R.style.Animation_Toast
-            windowMap[ZHIHU_VIEW] = zhihuView
-            zhihuView.setOnClickListener {
+            loadLayoutParams.flags = WindowManager.LayoutParams.FLAG_FULLSCREEN or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+            loadLayoutParams.format = PixelFormat.RGBA_8888
+            loadLayoutParams.y = ConvertUtils.dp2px(150f)
+            loadLayoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
+            loadLayoutParams.height = ConvertUtils.dp2px(50f)
+            loadLayoutParams.windowAnimations = android.R.style.Animation_Toast
+            windowMap[LOAD_VIEW] = loadView
+        }
+        windowManager.addView(windowMap[LOAD_VIEW], loadLayoutParams)
+//        handler.postDelayed(run, 3000)
+    }
+
+    fun updateView(msg: String, isClick: Boolean) {
+        if (windowMap[LOAD_VIEW] === null) {
+            downloadView = LayoutInflater.from(applicationContext).inflate(R.layout.layout_window_hint, null)
+            downloadLayoutParams = WindowManager.LayoutParams()
+            downloadLayoutParams.gravity = Gravity.RIGHT or Gravity.TOP
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                downloadLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+            } else {
+                downloadLayoutParams.type = WindowManager.LayoutParams.TYPE_TOAST
+            }
+            downloadLayoutParams.flags = WindowManager.LayoutParams.FLAG_FULLSCREEN or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+            downloadLayoutParams.format = PixelFormat.RGBA_8888
+            downloadLayoutParams.y = ConvertUtils.dp2px(150f)
+            downloadLayoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
+            downloadLayoutParams.height = ConvertUtils.dp2px(50f)
+            downloadLayoutParams.windowAnimations = android.R.style.Animation_Toast
+            windowMap[LOAD_VIEW] = loadView
+        }
+        loadView.dialog_content.text = msg
+        if(isClick){
+            loadView.dialog_content.setOnClickListener {
                 startActivity(Intent(baseContext, MainActivity::class.java))
                 removeZhihuView()
                 handler.removeCallbacks(run)
             }
         }
-        windowManager.addView(windowMap[ZHIHU_VIEW], toastLayoutParams)
-        handler.postDelayed(run, 3000)
+        windowManager.updateViewLayout(downloadView, downloadLayoutParams)
+
     }
 
     private fun removeZhihuView() {
-        if (windowMap[ZHIHU_VIEW] !== null) {
-            windowManager.removeView(windowMap[ZHIHU_VIEW])
+        if (windowMap[DOWNLOAD_VIEW] !== null) {
+            windowManager.removeView(windowMap[DOWNLOAD_VIEW])
         }
     }
 

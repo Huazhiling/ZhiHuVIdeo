@@ -1,10 +1,7 @@
 package com.example.mvc.intercept_video_link.activity
 
+import android.annotation.SuppressLint
 import android.content.*
-import android.net.Uri
-import android.os.Build
-import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
 import android.os.IBinder
 import android.view.View
 import com.blankj.utilcode.util.LogUtils
@@ -78,14 +75,9 @@ class MainActivity : BaseActivity() {
                 urlBind = service
                 urlService.setParsingCallback(object : ParsingCallback {
                     override fun AnalysisSourceCode(primary: String) {
-                        search_edit.setText(primary)
-                        url = primary
-                        search_submit.performClick()
+                        resolveVideo(primary)
                     }
                 })
-                url = "https://www.zhihu.com/question/267782048/answer/495260282"
-                search_edit.setText(url)
-                search_submit.performClick()
             }
         }
     }
@@ -94,46 +86,44 @@ class MainActivity : BaseActivity() {
         moveTaskToBack(true)
     }
 
-    fun onClick(view: View) {
-        when (view.id) {
-            R.id.search_submit -> {
-                if (!PatternHelper.isHttpUrl(url)) {
-                    ToastUtils.showShort("地址无效")
-                    return
-                }
-                videoInfo.clear()
-                video_load.visibility = View.VISIBLE
-                video_null.visibility = View.INVISIBLE
-                video_list.visibility = View.INVISIBLE
-                Observable.just(url)
-                        .subscribeOn(Schedulers.io())
-                        .flatMap {
-                            var httpUrl = URL(it)
-                            var conn = httpUrl.openConnection() as HttpURLConnection
-                            var inStream = conn.inputStream
-                            var htmlSourceCode = String(inStream.readBytes())
-                            var videoList = JsoupHelper.getInstance(htmlSourceCode).getAllResource()
-                            Observable.just(videoList)
-                        }
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ list ->
-                            videoInfo.addAll(list)
-                            if (videoInfo.size > 0) {
-                                adapter.notifyDataSetChanged()
-                                video_null.visibility = View.INVISIBLE
-                                video_load.visibility = View.INVISIBLE
-                                video_list.visibility = View.VISIBLE
-                                urlService.createZhihuVideoHint()
-                            } else {
-                                video_null.visibility = View.VISIBLE
-                                video_load.visibility = View.INVISIBLE
-                                video_list.visibility = View.INVISIBLE
-                            }
-                        }, { thorw ->
-                            LogUtils.e(thorw.message)
-                            ToastUtils.showShort("链接解析错误，请重试或更换链接地址")
-                        })
-            }
+    @SuppressLint("CheckResult")
+    fun resolveVideo(url: String) {
+        if (!PatternHelper.isHttpUrl(url)) {
+            ToastUtils.showShort("地址无效")
+            return
         }
+        videoInfo.clear()
+        video_load.visibility = View.VISIBLE
+        video_null.visibility = View.INVISIBLE
+        video_list.visibility = View.INVISIBLE
+        Observable.just(url)
+                .subscribeOn(Schedulers.io())
+                .flatMap {
+                    var httpUrl = URL(it)
+                    var conn = httpUrl.openConnection() as HttpURLConnection
+                    var inStream = conn.inputStream
+                    var htmlSourceCode = String(inStream.readBytes())
+                    var videoList = JsoupHelper.getInstance(htmlSourceCode).getAllResource()
+                    Observable.just(videoList)
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ list ->
+                    videoInfo.addAll(list)
+                    if (videoInfo.size > 0) {
+                        adapter.notifyDataSetChanged()
+                        video_null.visibility = View.INVISIBLE
+                        video_load.visibility = View.INVISIBLE
+                        video_list.visibility = View.VISIBLE
+                        urlService.updateView("点击查看视频列表", true)
+                    } else {
+                        video_null.visibility = View.VISIBLE
+                        video_load.visibility = View.INVISIBLE
+                        video_list.visibility = View.INVISIBLE
+                        urlService.updateView("没有视频", false)
+                    }
+                }, { thorw ->
+                    LogUtils.e(thorw.message)
+                    urlService.updateView("解析失败", false)
+                })
     }
 }
