@@ -124,6 +124,5 @@
         app:sLeftTextColor="@color/window_hint_gray"
         app:sLeftTextString="@string/data_clear_cache"
         app:sRightTextColor="@color/edit_gray"
-        app:sRightTextSize="11sp"
-        app:sRightTextString="0.0M" />
+        app:sRightTextSize="11sp"/>
 </LinearLayout>

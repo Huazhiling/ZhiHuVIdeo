@@ -38,7 +38,7 @@ class UrlService : Service() {
     private var windowMap = HashMap<String, View>()
     private var handler = Handler()
     private var run = Runnable {
-        handler.post { removeZhihuView() }
+        handler.post { removeDownloadView() }
     }
 
     override fun onCreate() {
@@ -66,7 +66,7 @@ class UrlService : Service() {
             loadLayoutParams.y = ConvertUtils.dp2px(150f)
             loadLayoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
             loadLayoutParams.height = ConvertUtils.dp2px(50f)
-            loadLayoutParams.windowAnimations = android.R.style.Animation_Toast
+            loadLayoutParams.windowAnimations = android.R.style.Animation_Translucent
             windowMap[LOAD_VIEW] = loadView
         }
         windowManager.addView(windowMap[LOAD_VIEW], loadLayoutParams)
@@ -74,7 +74,7 @@ class UrlService : Service() {
     }
 
     fun updateView(msg: String, isClick: Boolean) {
-        if (windowMap[LOAD_VIEW] === null) {
+        if (windowMap[DOWNLOAD_VIEW] === null) {
             downloadView = LayoutInflater.from(applicationContext).inflate(R.layout.layout_window_hint, null)
             downloadLayoutParams = WindowManager.LayoutParams()
             downloadLayoutParams.gravity = Gravity.RIGHT or Gravity.TOP
@@ -88,24 +88,35 @@ class UrlService : Service() {
             downloadLayoutParams.y = ConvertUtils.dp2px(150f)
             downloadLayoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
             downloadLayoutParams.height = ConvertUtils.dp2px(50f)
-            downloadLayoutParams.windowAnimations = android.R.style.Animation_Toast
-            windowMap[LOAD_VIEW] = loadView
+            downloadLayoutParams.windowAnimations = android.R.style.Animation_Translucent
+            windowMap[DOWNLOAD_VIEW] = downloadView
         }
-        loadView.dialog_content.text = msg
-        if(isClick){
-            loadView.dialog_content.setOnClickListener {
-                startActivity(Intent(baseContext, MainActivity::class.java))
-                removeZhihuView()
+        downloadView.dialog_content.text = msg
+        if (isClick) {
+            downloadView.dialog_content.setOnClickListener {
+                parCallback.startActivity(baseContext)
+                removeDownloadView()
                 handler.removeCallbacks(run)
             }
         }
-        windowManager.updateViewLayout(downloadView, downloadLayoutParams)
-
+        updateViewLayout(downloadView, downloadLayoutParams)
+        handler.postDelayed(run, 3000)
     }
 
-    private fun removeZhihuView() {
+    private fun updateViewLayout(downloadView: View, downloadLayoutParams: WindowManager.LayoutParams) {
+        removeLoadView()
+        windowManager.addView(downloadView, downloadLayoutParams)
+    }
+
+    private fun removeDownloadView() {
         if (windowMap[DOWNLOAD_VIEW] !== null) {
             windowManager.removeView(windowMap[DOWNLOAD_VIEW])
+        }
+    }
+
+    private fun removeLoadView() {
+        if (windowMap[LOAD_VIEW] !== null) {
+            windowManager.removeView(windowMap[LOAD_VIEW])
         }
     }
 

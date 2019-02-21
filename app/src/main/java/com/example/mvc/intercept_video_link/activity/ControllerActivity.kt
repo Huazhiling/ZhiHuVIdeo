@@ -1,5 +1,6 @@
 package com.example.mvc.intercept_video_link.activity
 
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -10,22 +11,33 @@ import android.os.IBinder
 import android.provider.Settings
 import android.support.v7.app.AlertDialog
 import android.view.View
+import com.blankj.utilcode.util.FileUtils
+import com.blankj.utilcode.util.FileUtils.*
+import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.example.mvc.intercept_video_link.R
 import com.example.mvc.intercept_video_link.bean.AppInfo
+import com.example.mvc.intercept_video_link.bean.VideoInfo
 import com.example.mvc.intercept_video_link.event.LanguageEvent
 import com.example.mvc.intercept_video_link.listener.IDialogInterface
 import com.example.mvc.intercept_video_link.listener.ParsingCallback
 import com.example.mvc.intercept_video_link.service.UrlService
 import com.example.mvc.intercept_video_link.utils.DialogHelper
+import com.example.mvc.intercept_video_link.utils.JsoupHelper
+import com.example.mvc.intercept_video_link.utils.PatternHelper
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_controller.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import java.net.HttpURLConnection
+import java.net.URL
 
 class ControllerActivity : BaseActivity() {
     private lateinit var appInfo: AppInfo
     private lateinit var urlService: UrlService
-
+    private var videoList = ArrayList<VideoInfo>()
 
     override fun getLayoutId(): Int {
         return R.layout.activity_controller
@@ -37,6 +49,8 @@ class ControllerActivity : BaseActivity() {
         var bindIntent = intent
         bindIntent.setClass(this, UrlService::class.java)
         bindService(bindIntent, urlConnection, Context.BIND_AUTO_CREATE)
+        LogUtils.e(getDirSize(cacheDir))
+        app_clear_cache.setRightString(getDirSize(cacheDir))
     }
 
     override fun initData() {
@@ -44,6 +58,7 @@ class ControllerActivity : BaseActivity() {
             override fun clickCallback(view: View) {
 
             }
+
             override fun dismissCallback() {
                 //检查悬浮窗权限
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -85,7 +100,7 @@ class ControllerActivity : BaseActivity() {
             }
 //            查看当前
             R.id.app_current_record -> {
-
+                startActivityCarryVideoInfo()
             }
 //            查看历史
             R.id.app_history_record -> {
@@ -101,7 +116,12 @@ class ControllerActivity : BaseActivity() {
             }
 //            清除缓存
             R.id.app_clear_cache -> {
-
+                if (FileUtils.deleteDir(cacheDir)) {
+                    ToastUtils.showShort(R.string.data_chear_cache_success)
+                    app_clear_cache.setRightString(getDirSize(cacheDir))
+                } else {
+                    ToastUtils.showShort(R.string.data_chear_cache_failed)
+                }
             }
         }
     }
@@ -123,8 +143,21 @@ class ControllerActivity : BaseActivity() {
             if (service is UrlService.UrlBind) {
                 urlService = service.getService()
                 urlService.setParsingCallback(object : ParsingCallback {
+                    override fun startActivity(context: Context) {
+                        startActivityCarryVideoInfo()
+                    }
+
                     override fun AnalysisSourceCode(primary: String) {
-                        urlService.createLoadView()
+                        //检查悬浮窗权限
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            if (Settings.canDrawOverlays(this@ControllerActivity)) {
+                                urlService.createLoadView()
+                                resolveVideo(primary)
+                            }
+                        } else {
+                            urlService.createLoadView()
+                            resolveVideo(primary)
+                        }
                     }
                 })
             }
@@ -137,6 +170,43 @@ class ControllerActivity : BaseActivity() {
             unbindService(urlConnection)
         }
         recreate()
+    }
+
+    /**
+     * 解析网址
+     */
+    @SuppressLint("CheckResult")
+    fun resolveVideo(url: String) {
+        if (!PatternHelper.isHttpUrl(url)) {
+            ToastUtils.showShort("地址无效")
+            return
+        }
+        Observable.just(url)
+                .subscribeOn(Schedulers.io())
+                .flatMap {
+                    var httpUrl = URL(it)
+                    var conn = httpUrl.openConnection() as HttpURLConnection
+                    var inStream = conn.inputStream
+                    var htmlSourceCode = String(inStream.readBytes())
+                    videoList.clear()
+                    this.videoList.addAll(JsoupHelper.getInstance(htmlSourceCode).getAllResource())
+                    Observable.just(videoList)
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ list ->
+                    if (list.size > 0) {
+                        urlService.updateView("点击查看视频列表", true)
+                    } else {
+                        urlService.updateView("没有视频", false)
+                    }
+                }, { thorw ->
+                    LogUtils.e(thorw.message)
+                    urlService.updateView("解析失败", false)
+                })
+    }
+
+    override fun onBackPressed() {
+        moveTaskToBack(true)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -152,5 +222,12 @@ class ControllerActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    fun startActivityCarryVideoInfo() {
+        var mainIntent = Intent(this, MainActivity::class.java)
+        LogUtils.e("video.size${videoList.size}")
+        mainIntent.putParcelableArrayListExtra("videoList", videoList)
+        startActivity(mainIntent)
     }
 }

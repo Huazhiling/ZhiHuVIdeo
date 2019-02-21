@@ -60,7 +60,6 @@ class MyApplication : Application() {
     companion object {
         private lateinit var application: Application
         fun getAppContext(): Application {
-            LogUtils.e(application)
             return application
         }
 

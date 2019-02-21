@@ -26,7 +26,6 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     override fun attachBaseContext(newBase: Context) {
-        LogUtils.e(MyApplication.getAppContext())
         super.attachBaseContext(LanguageUtils.wrapLocale(newBase, Locale(LanguageUtils.getUserSetLocal(MyApplication.getAppContext()))))
     }
 

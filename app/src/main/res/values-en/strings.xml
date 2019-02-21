@@ -17,4 +17,6 @@
     <string name="data_delete_download">Delete Download Video</string>
     <string name="data_download">Open Download Directory</string>
     <string name="data_clear_cache">Clear Cache</string>
+    <string name="data_chear_cache_success">Clear cache successfully</string>
+    <string name="data_chear_cache_failed">Clear cache failed</string>
 </resources>
