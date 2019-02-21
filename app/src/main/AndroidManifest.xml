@@ -47,6 +47,7 @@
             android:name=".activity.MainActivity"
             android:launchMode="singleTask" />
         <activity android:name=".activity.LanguageActivity" />
+        <activity android:name=".activity.VideoHistoryActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

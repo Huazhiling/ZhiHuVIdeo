@@ -7,17 +7,22 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.os.IBinder
 import android.provider.Settings
+import android.support.v4.content.FileProvider
 import android.support.v7.app.AlertDialog
 import android.view.View
 import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.FileUtils.*
 import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ToastUtils
+import com.example.mvc.intercept_video_link.MyApplication
 import com.example.mvc.intercept_video_link.R
 import com.example.mvc.intercept_video_link.bean.AppInfo
+import com.example.mvc.intercept_video_link.bean.HistoryBean
 import com.example.mvc.intercept_video_link.bean.VideoInfo
+import com.example.mvc.intercept_video_link.event.HistoryAddEvent
 import com.example.mvc.intercept_video_link.event.LanguageEvent
 import com.example.mvc.intercept_video_link.listener.IDialogInterface
 import com.example.mvc.intercept_video_link.listener.ParsingCallback
@@ -31,12 +36,14 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_controller.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
 
 class ControllerActivity : BaseActivity() {
     private lateinit var appInfo: AppInfo
     private lateinit var urlService: UrlService
+    private lateinit var historyList: HashMap<String, HistoryBean>
     private var videoList = ArrayList<VideoInfo>()
 
     override fun getLayoutId(): Int {
@@ -46,10 +53,10 @@ class ControllerActivity : BaseActivity() {
     override fun initView() {
         super.initView()
         EventBus.getDefault().register(this)
+        historyList = HashMap()
         var bindIntent = intent
         bindIntent.setClass(this, UrlService::class.java)
         bindService(bindIntent, urlConnection, Context.BIND_AUTO_CREATE)
-        LogUtils.e(getDirSize(cacheDir))
         app_clear_cache.setRightString(getDirSize(cacheDir))
     }
 
@@ -104,15 +111,52 @@ class ControllerActivity : BaseActivity() {
             }
 //            查看历史
             R.id.app_history_record -> {
-
+                var videoIntent = Intent(this, VideoHistoryActivity::class.java)
+                videoIntent.putExtra("historyList", historyList)
+                startActivity(videoIntent)
             }
 //            删除下载
             R.id.app_delete_download -> {
-
+                AlertDialog.Builder(this@ControllerActivity)
+                        .setTitle("删除视频")
+                        .setMessage("即将删除所有视频，删除后可能无法恢复，是否允许？")
+                        .setNegativeButton("否") { dialog, which -> dialog.dismiss() }
+                        .setPositiveButton("是") { dialog, which ->
+                            dialog.dismiss()
+                            var file = File("${Environment.getExternalStorageDirectory().absolutePath}/ZhiHuVideo/")
+                            if (FileUtils.deleteDir(file)) {
+                                ToastUtils.showShort("删除成功")
+                            } else {
+                                ToastUtils.showShort("删除失败")
+                            }
+                        }
+                        .show()
             }
 //            打开下载
             R.id.app_open_download -> {
-
+                AlertDialog.Builder(this@ControllerActivity)
+                        .setTitle("打开文件夹")
+                        .setMessage("即将离开App，前往下载目录，是否前往？")
+                        .setNegativeButton("否") { dialog, which -> dialog.dismiss() }
+                        .setPositiveButton("是") { dialog, which ->
+                            dialog.dismiss()
+                            var file = File("${Environment.getExternalStorageDirectory().absolutePath}/ZhiHuVideo/")
+                            if (file.exists()) {
+                                var fileIntent = Intent(Intent.ACTION_GET_CONTENT)
+                                fileIntent.addCategory(Intent.CATEGORY_DEFAULT)
+                                fileIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    //data是file类型,忘了复制过来
+                                    fileIntent.setDataAndType(FileProvider.getUriForFile(baseContext, MyApplication.getAppContext()?.packageName + ".fileprovider", file.parentFile), "video/mp4")
+                                } else {
+                                    fileIntent.setDataAndType(Uri.fromFile(file), "video/mp4")
+                                }
+                                startActivity(fileIntent)
+                            } else {
+                                ToastUtils.showShort("还没有下载文件")
+                            }
+                        }
+                        .show()
             }
 //            清除缓存
             R.id.app_clear_cache -> {
@@ -195,7 +239,15 @@ class ControllerActivity : BaseActivity() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ list ->
                     if (list.size > 0) {
+                        var childHistoryList = ArrayList<HistoryBean.DataBean>()
+                        for (videoInfo in list) {
+                            var childHistory = HistoryBean.DataBean(videoInfo.videoSrc, videoInfo.title, videoInfo.imgsrc)
+                            childHistoryList.add(childHistory)
+                        }
+                        var history = HistoryBean(url, System.currentTimeMillis(), childHistoryList)
+                        historyList[url] = history
                         urlService.updateView("点击查看视频列表", true)
+                        EventBus.getDefault().post(HistoryAddEvent(history))
                     } else {
                         urlService.updateView("没有视频", false)
                     }
@@ -226,7 +278,6 @@ class ControllerActivity : BaseActivity() {
 
     fun startActivityCarryVideoInfo() {
         var mainIntent = Intent(this, MainActivity::class.java)
-        LogUtils.e("video.size${videoList.size}")
         mainIntent.putParcelableArrayListExtra("videoList", videoList)
         startActivity(mainIntent)
     }

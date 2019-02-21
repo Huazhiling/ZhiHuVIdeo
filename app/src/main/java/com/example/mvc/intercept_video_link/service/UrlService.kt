@@ -92,8 +92,8 @@ class UrlService : Service() {
             windowMap[DOWNLOAD_VIEW] = downloadView
         }
         downloadView.dialog_content.text = msg
-        if (isClick) {
-            downloadView.dialog_content.setOnClickListener {
+        downloadView.dialog_content.setOnClickListener {
+            if (isClick) {
                 parCallback.startActivity(baseContext)
                 removeDownloadView()
                 handler.removeCallbacks(run)
