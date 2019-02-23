@@ -49,7 +49,7 @@ class VideoHistoryActivity : BaseActivity() {
                     var videoList = ArrayList<VideoInfo>()
                     var historyData = historyList[historyArray[position].url]!!.dataBean
                     for (historyDatum in historyData) {
-                        var video = VideoInfo(historyDatum.imageUrl, historyDatum.title, historyDatum.url)
+                        var video = VideoInfo(historyDatum.imageUrl, historyDatum.title, historyDatum.url,historyDatum.downloadUrl)
                         videoList.add(video)
                     }
                     var mainIntent = Intent(this, MainActivity::class.java)

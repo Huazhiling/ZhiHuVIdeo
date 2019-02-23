@@ -6,9 +6,11 @@ import android.os.Parcelable
 data class VideoInfo(
         var imgsrc: String,
         var title: String,
+        var downLoadUrl: String,
         var videoSrc: String
 ):Parcelable {
     constructor(parcel: Parcel) : this(
+            parcel.readString(),
             parcel.readString(),
             parcel.readString(),
             parcel.readString())
@@ -16,6 +18,7 @@ data class VideoInfo(
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(imgsrc)
         parcel.writeString(title)
+        parcel.writeString(downLoadUrl)
         parcel.writeString(videoSrc)
     }
 

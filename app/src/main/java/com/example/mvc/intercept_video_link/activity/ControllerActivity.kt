@@ -31,6 +31,7 @@ import com.example.mvc.intercept_video_link.utils.DialogHelper
 import com.example.mvc.intercept_video_link.utils.JsoupHelper
 import com.example.mvc.intercept_video_link.utils.PatternHelper
 import io.reactivex.Observable
+import io.reactivex.ObservableSource
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_controller.*
@@ -228,20 +229,20 @@ class ControllerActivity : BaseActivity() {
         Observable.just(url)
                 .subscribeOn(Schedulers.io())
                 .flatMap {
+                    LogUtils.e(it)
                     var httpUrl = URL(it)
                     var conn = httpUrl.openConnection() as HttpURLConnection
                     var inStream = conn.inputStream
                     var htmlSourceCode = String(inStream.readBytes())
                     videoList.clear()
-                    this.videoList.addAll(JsoupHelper.getInstance(htmlSourceCode).getAllResource())
+                    videoList.addAll(JsoupHelper.getInstance(htmlSourceCode).getAllResource())
                     Observable.just(videoList)
-                }
-                .observeOn(AndroidSchedulers.mainThread())
+                }.observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ list ->
                     if (list.size > 0) {
                         var childHistoryList = ArrayList<HistoryBean.DataBean>()
-                        for (videoInfo in list) {
-                            var childHistory = HistoryBean.DataBean(videoInfo.videoSrc, videoInfo.title, videoInfo.imgsrc)
+                        for (videoInfo in videoList) {
+                            var childHistory = HistoryBean.DataBean(videoInfo.videoSrc, videoInfo.title, videoInfo.imgsrc,videoInfo.downLoadUrl)
                             childHistoryList.add(childHistory)
                         }
                         var history = HistoryBean(url, System.currentTimeMillis(), childHistoryList)

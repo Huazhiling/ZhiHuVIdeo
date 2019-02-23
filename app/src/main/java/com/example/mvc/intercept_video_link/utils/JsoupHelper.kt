@@ -4,6 +4,8 @@ import com.blankj.utilcode.util.LogUtils
 import com.example.mvc.intercept_video_link.bean.VideoInfo
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
+import java.net.HttpURLConnection
+import java.net.URL
 
 class JsoupHelper {
     companion object {
@@ -24,13 +26,28 @@ class JsoupHelper {
         for (data in thumbnails.indices) {
             var thumbnailElement = thumbnails[data]
             var videosElement = videos[data]
-            videosElement.select("span.title")
-//            var src = element.attr("content")
             var title = videosElement.select("span.title").text()
-            var video = VideoInfo(thumbnailElement.attr("src"), if (title == "") "暂无标题" else title, videosElement.select("span.url").text())
+            var videoUrl = videosElement.select("span.url").text()
+            getDownLoadUrl(videoUrl)
+            var video = VideoInfo(thumbnailElement.attr("src"), if (title == "") "暂无标题" else title,videoUrl, videoUrl)
             urlList.add(video)
         }
         return urlList
+    }
+
+    fun getDownLoadUrl(url:String): String {
+        var httpUrl = URL(url)
+        var conn = httpUrl.openConnection() as HttpURLConnection
+        var inStream = conn.inputStream
+        var htmlSourceCode = String(inStream.readBytes())
+        var sb = StringBuffer()
+        var thumbnails = Jsoup.parse(htmlSourceCode).body().select("div#player")
+        LogUtils.e("$url  ${thumbnails.size}")
+        LogUtils.e(htmlSourceCode)
+        for (thumbnail in thumbnails) {
+            LogUtils.e(thumbnails.html())
+        }
+        return sb.toString()
     }
 
     /**

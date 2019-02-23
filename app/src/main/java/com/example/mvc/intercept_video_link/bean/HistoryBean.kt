@@ -11,7 +11,8 @@ data class HistoryBean(
     data class DataBean(
             var url: String,
             var title: String,
-            var imageUrl: String
+            var imageUrl: String,
+            var downloadUrl: String
     ) : Serializable
 }
 
