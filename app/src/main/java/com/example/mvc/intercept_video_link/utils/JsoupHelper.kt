@@ -2,6 +2,7 @@ package com.example.mvc.intercept_video_link.utils
 
 import com.blankj.utilcode.util.LogUtils
 import com.example.mvc.intercept_video_link.bean.VideoInfo
+import com.example.mvc.intercept_video_link.listener.ApiStore
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import java.net.HttpURLConnection
@@ -28,14 +29,15 @@ class JsoupHelper {
             var videosElement = videos[data]
             var title = videosElement.select("span.title").text()
             var videoUrl = videosElement.select("span.url").text()
-            getDownLoadUrl(videoUrl)
-            var video = VideoInfo(thumbnailElement.attr("src"), if (title == "") "暂无标题" else title,videoUrl, videoUrl)
+            var video_id = videoUrl.substring(videoUrl.lastIndexOf("/") + 1, videoUrl.length)
+            var zhihuVideoBean = RetrofitUtils.client(ApiStore::class.java).getVideoInfo(video_id).execute()
+            var video = VideoInfo(thumbnailElement.attr("src"), if (title == "") "暂无标题" else title, zhihuVideoBean.body()!!.playlist.ld.play_url, videoUrl)
             urlList.add(video)
         }
         return urlList
     }
 
-    fun getDownLoadUrl(url:String): String {
+    fun getDownLoadUrl(url: String): String {
         var httpUrl = URL(url)
         var conn = httpUrl.openConnection() as HttpURLConnection
         var inStream = conn.inputStream

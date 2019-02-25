@@ -12,13 +12,19 @@ import com.per.rslibrary.RsPermission
 import kotlinx.android.synthetic.main.activity_web_video.*
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
+import android.net.http.SslError
 import android.os.Build
 import android.os.Environment
+import android.os.Message
 import android.support.v4.app.NotificationCompat
+import android.view.KeyEvent
 import com.blankj.utilcode.util.LogUtils
 import com.example.mvc.intercept_video_link.R
 import com.example.mvc.intercept_video_link.service.DownloadService
+import com.example.mvc.intercept_video_link.utils.DownloadUtils
+import com.example.mvc.intercept_video_link.utils.DownloadUtils.downloadVideo
 import org.json.JSONException
 import java.io.File
 import java.text.SimpleDateFormat
@@ -37,6 +43,7 @@ class WebVideoActivity : AppCompatActivity() {
         url = intent.getStringExtra("video_url")
         video_title = intent.getStringExtra("video_title")
         video_web.loadUrl(url)
+        video_web.addJavascriptInterface(JavaScriptInterface(), "html_source")
         video_web.webChromeClient = object : WebChromeClient() {
         }
         video_web.setDownloadListener { url, userAgent, contentDisposition, mimetype, contentLength ->
@@ -50,11 +57,7 @@ class WebVideoActivity : AppCompatActivity() {
                 }
 
                 override fun success(i: Int) {
-                    var videoFile = File("${Environment.getExternalStorageDirectory().absolutePath}/ZhiHuVideo/")
-                    if (!videoFile.exists()) {
-                        videoFile.mkdirs()
-                    }
-                    downloadVideo(url, userAgent, contentDisposition, mimetype, contentLength)
+                    DownloadUtils.downloadVideo(baseContext, url)
                 }
             }).requestPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
@@ -62,18 +65,12 @@ class WebVideoActivity : AppCompatActivity() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
             }
-        }
-    }
 
-    private fun downloadVideo(url: String?, userAgent: String?, contentDisposition: String?, mimetype: String?, contentLength: Long) {
-        var sb = StringBuffer()
-        var now = Date()
-        var dateFormat = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss")
-        sb.append("Zhihu_${dateFormat.format(now)}")
-        var download = Intent(baseContext, DownloadService::class.java)
-        download.putExtra("url", url)
-        download.putExtra("title", sb.toString())
-        startService(download)
+            override fun onLoadResource(view: WebView?, url: String?) {
+                LogUtils.e("onLoadResource  $url")
+                super.onLoadResource(view, url)
+            }
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -93,5 +90,12 @@ class WebVideoActivity : AppCompatActivity() {
             video_web.destroy()
         }
         super.onDestroy()
+    }
+
+    class JavaScriptInterface {
+        @JavascriptInterface
+        fun getHtml(source: String) {
+            LogUtils.e(source)
+        }
     }
 }

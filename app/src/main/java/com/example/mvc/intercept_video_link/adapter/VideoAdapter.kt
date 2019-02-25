@@ -13,6 +13,6 @@ class VideoAdapter(layoutResId: Int, data: ArrayList<VideoInfo>?): BaseQuickAdap
         var srcImg = helper!!.getView<ImageView>(R.id.item_img)
 //        val options = RequestOptions().fallback(R.drawable.default_project).placeholder(R.drawable.loading_img).error(R.drawable.default_project)
         Glide.with(mContext).load(item?.imgsrc).into(srcImg)
-        helper.addOnClickListener(R.id.item_layout)
+        helper.addOnClickListener(R.id.item_layout).addOnClickListener(R.id.item_down)
     }
 }

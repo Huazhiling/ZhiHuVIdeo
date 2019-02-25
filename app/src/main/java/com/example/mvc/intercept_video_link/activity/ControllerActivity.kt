@@ -31,7 +31,6 @@ import com.example.mvc.intercept_video_link.utils.DialogHelper
 import com.example.mvc.intercept_video_link.utils.JsoupHelper
 import com.example.mvc.intercept_video_link.utils.PatternHelper
 import io.reactivex.Observable
-import io.reactivex.ObservableSource
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_controller.*
@@ -192,7 +191,7 @@ class ControllerActivity : BaseActivity() {
                         startActivityCarryVideoInfo()
                     }
 
-                    override fun AnalysisSourceCode(primary: String) {
+                    override fun analysisSourceCode(primary: String) {
                         //检查悬浮窗权限
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             if (Settings.canDrawOverlays(this@ControllerActivity)) {
@@ -223,13 +222,12 @@ class ControllerActivity : BaseActivity() {
     @SuppressLint("CheckResult")
     fun resolveVideo(url: String) {
         if (!PatternHelper.isHttpUrl(url)) {
-            ToastUtils.showShort("地址无效")
+//            ToastUtils.showShort("地址无效")
             return
         }
         Observable.just(url)
                 .subscribeOn(Schedulers.io())
                 .flatMap {
-                    LogUtils.e(it)
                     var httpUrl = URL(it)
                     var conn = httpUrl.openConnection() as HttpURLConnection
                     var inStream = conn.inputStream
@@ -238,11 +236,11 @@ class ControllerActivity : BaseActivity() {
                     videoList.addAll(JsoupHelper.getInstance(htmlSourceCode).getAllResource())
                     Observable.just(videoList)
                 }.observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ list ->
-                    if (list.size > 0) {
+                .subscribe({
+                    if (videoList.size > 0) {
                         var childHistoryList = ArrayList<HistoryBean.DataBean>()
                         for (videoInfo in videoList) {
-                            var childHistory = HistoryBean.DataBean(videoInfo.videoSrc, videoInfo.title, videoInfo.imgsrc,videoInfo.downLoadUrl)
+                            var childHistory = HistoryBean.DataBean(videoInfo.videoSrc, videoInfo.title, videoInfo.imgsrc, videoInfo.downLoadUrl)
                             childHistoryList.add(childHistory)
                         }
                         var history = HistoryBean(url, System.currentTimeMillis(), childHistoryList)
@@ -252,8 +250,8 @@ class ControllerActivity : BaseActivity() {
                     } else {
                         urlService.updateView("没有视频", false)
                     }
-                }, { thorw ->
-                    LogUtils.e(thorw.message)
+                }, {
+                    LogUtils.e(it.message)
                     urlService.updateView("解析失败", false)
                 })
     }

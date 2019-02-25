@@ -14,7 +14,6 @@ import android.os.Handler
 import android.view.*
 import com.blankj.utilcode.util.ConvertUtils
 import com.example.mvc.intercept_video_link.R
-import com.example.mvc.intercept_video_link.activity.MainActivity
 import com.example.mvc.intercept_video_link.listener.ParsingCallback
 import com.example.mvc.intercept_video_link.utils.PatternHelper
 import kotlinx.android.synthetic.main.layout_window_hint.view.*
@@ -139,7 +138,7 @@ class UrlService : Service() {
                     utlSb.append("http://")
                 }
                 utlSb.append(primary)
-                parCallback.AnalysisSourceCode(utlSb.toString())
+                parCallback.analysisSourceCode(utlSb.toString())
             } else {
 //                复制的空字符串  不给解析
             }
