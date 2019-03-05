@@ -11,6 +11,7 @@ import android.app.ActivityManager
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.Handler
+import android.provider.Settings
 import android.view.*
 import com.blankj.utilcode.util.ConvertUtils
 import com.example.mvc.intercept_video_link.R
@@ -68,8 +69,16 @@ class UrlService : Service() {
             loadLayoutParams.windowAnimations = android.R.style.Animation_Translucent
             windowMap[LOAD_VIEW] = loadView
         }
-        windowManager.addView(windowMap[LOAD_VIEW], loadLayoutParams)
+        if (isAndroidVersionAddAFloatingWindow()) {
+            windowManager.addView(windowMap[LOAD_VIEW], loadLayoutParams)
+            handler.postDelayed(run, 3000)
+        }
 //        handler.postDelayed(run, 3000)
+    }
+
+    private fun isAndroidVersionAddAFloatingWindow(): Boolean {
+        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.canDrawOverlays(this))
+                || Build.VERSION.SDK_INT < Build.VERSION_CODES.M
     }
 
     fun updateView(msg: String, isClick: Boolean) {
@@ -98,8 +107,10 @@ class UrlService : Service() {
                 handler.removeCallbacks(run)
             }
         }
-        updateViewLayout(downloadView, downloadLayoutParams)
-        handler.postDelayed(run, 3000)
+        if (isAndroidVersionAddAFloatingWindow()) {
+            updateViewLayout(downloadView, downloadLayoutParams)
+            handler.postDelayed(run, 3000)
+        }
     }
 
     private fun updateViewLayout(downloadView: View, downloadLayoutParams: WindowManager.LayoutParams) {

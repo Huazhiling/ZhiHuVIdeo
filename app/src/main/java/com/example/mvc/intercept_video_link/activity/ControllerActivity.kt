@@ -39,6 +39,8 @@ import org.greenrobot.eventbus.Subscribe
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ControllerActivity : BaseActivity() {
     private lateinit var appInfo: AppInfo
@@ -146,7 +148,6 @@ class ControllerActivity : BaseActivity() {
                                 fileIntent.addCategory(Intent.CATEGORY_DEFAULT)
                                 fileIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                    //data是file类型,忘了复制过来
                                     fileIntent.setDataAndType(FileProvider.getUriForFile(baseContext, MyApplication.getAppContext()?.packageName + ".fileprovider", file.parentFile), "video/mp4")
                                 } else {
                                     fileIntent.setDataAndType(Uri.fromFile(file), "video/mp4")
@@ -192,16 +193,8 @@ class ControllerActivity : BaseActivity() {
                     }
 
                     override fun analysisSourceCode(primary: String) {
-                        //检查悬浮窗权限
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            if (Settings.canDrawOverlays(this@ControllerActivity)) {
-                                urlService.createLoadView()
-                                resolveVideo(primary)
-                            }
-                        } else {
-                            urlService.createLoadView()
-                            resolveVideo(primary)
-                        }
+                        urlService.createLoadView()
+                        resolveVideo(primary)
                     }
                 })
             }
@@ -240,7 +233,10 @@ class ControllerActivity : BaseActivity() {
                     if (videoList.size > 0) {
                         var childHistoryList = ArrayList<HistoryBean.DataBean>()
                         for (videoInfo in videoList) {
-                            var childHistory = HistoryBean.DataBean(videoInfo.videoSrc, videoInfo.title, videoInfo.imgsrc, videoInfo.downLoadUrl)
+                            var childHistory = HistoryBean.DataBean(videoInfo.videoSrc
+                                    , if (videoInfo.title === "") SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(Date(System.currentTimeMillis())) else videoInfo.title
+                                    , videoInfo.imgsrc
+                                    , videoInfo.downLoadUrl)
                             childHistoryList.add(childHistory)
                         }
                         var history = HistoryBean(url, System.currentTimeMillis(), childHistoryList)

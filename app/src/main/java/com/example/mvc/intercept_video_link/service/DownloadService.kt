@@ -50,7 +50,6 @@ class DownloadService : IntentService("download") {
                     LogUtils.e(it.message)
                     ToastUtils.showShort("下载失败")
                 })
-
     }
 
     private fun saveVideo(strem: ResponseBody, videoFile: File): Boolean {
