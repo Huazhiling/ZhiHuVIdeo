@@ -8,15 +8,19 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.app.ActivityManager
+import android.content.ServiceConnection
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.Handler
 import android.provider.Settings
 import android.view.*
+import android.widget.TextView
 import com.blankj.utilcode.util.ConvertUtils
+import com.blankj.utilcode.util.LogUtils
 import com.example.mvc.intercept_video_link.R
 import com.example.mvc.intercept_video_link.listener.ParsingCallback
 import com.example.mvc.intercept_video_link.utils.PatternHelper
+import kotlinx.android.synthetic.main.layout_dialog.view.*
 import kotlinx.android.synthetic.main.layout_window_hint.view.*
 
 
@@ -75,7 +79,6 @@ class UrlService : Service() {
         }
 //        handler.postDelayed(run, 3000)
     }
-
     private fun isAndroidVersionAddAFloatingWindow(): Boolean {
         return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.canDrawOverlays(this))
                 || Build.VERSION.SDK_INT < Build.VERSION_CODES.M
@@ -99,8 +102,8 @@ class UrlService : Service() {
             downloadLayoutParams.windowAnimations = android.R.style.Animation_Translucent
             windowMap[DOWNLOAD_VIEW] = downloadView
         }
-        downloadView.dialog_content.text = msg
-        downloadView.dialog_content.setOnClickListener {
+        downloadView.findViewById<TextView>(R.id.dialog_content).text = msg
+        downloadView.findViewById<TextView>(R.id.dialog_content).setOnClickListener {
             if (isClick) {
                 parCallback.startActivity(baseContext)
                 removeDownloadView()
@@ -150,8 +153,6 @@ class UrlService : Service() {
                 }
                 utlSb.append(primary)
                 parCallback.analysisSourceCode(utlSb.toString())
-            } else {
-//                复制的空字符串  不给解析
             }
         }
     }

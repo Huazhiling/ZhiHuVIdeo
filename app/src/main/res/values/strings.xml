@@ -17,6 +17,7 @@
     <string name="data_delete_download">删除下载视频</string>
     <string name="data_download">打开下载目录</string>
     <string name="data_clear_cache">清空数据缓存</string>
+    <string name="data_contact_author">微信联系作者</string>
     <string name="data_chear_cache_success">清除缓存成功</string>
     <string name="data_chear_cache_failed">清除缓存失败</string>
 </resources>

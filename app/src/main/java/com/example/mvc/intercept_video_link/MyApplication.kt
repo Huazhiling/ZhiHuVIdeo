@@ -50,7 +50,6 @@ class MyApplication : Application() {
             appInfo = JsonHelper.stringToJson(app, AppInfo::class.java) as AppInfo
             JsonHelper.jsonToString(appInfo)
         }
-        LogUtils.e("$app  $appInfo ")
     }
 
     fun getAppInfo(): AppInfo {

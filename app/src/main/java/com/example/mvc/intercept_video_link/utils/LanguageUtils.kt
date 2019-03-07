@@ -2,11 +2,15 @@ package com.example.mvc.intercept_video_link.utils
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
-import com.blankj.utilcode.util.LogUtils
+import android.os.Process
 import com.blankj.utilcode.util.SPUtils
 import com.example.mvc.intercept_video_link.MyApplication
+import com.example.mvc.intercept_video_link.activity.ControllerActivity
 import com.example.mvc.intercept_video_link.common.Constant.APPINFO
+import com.example.mvc.intercept_video_link.event.LanguageEvent
+import org.greenrobot.eventbus.EventBus
 import java.util.*
 
 class LanguageUtils {
@@ -28,14 +32,19 @@ class LanguageUtils {
             return wrapConfiguration(context, config)
         }
 
-        fun changeLocale(language: String, configuration: Configuration, baseContext: Context,application: Application) {
+        fun changeLocale(language: String, configuration: Configuration, baseContext: Context, application: Application) {
             var locale = Locale(language)
             configuration.setLocale(locale)
             baseContext.createConfigurationContext(configuration)
             var appInfo = (application as MyApplication).getAppInfo()
             appInfo.appInfo.default_language = language
-            LogUtils.e(JsonHelper.jsonToString(appInfo))
             SPUtils.getInstance().put(APPINFO, JsonHelper.jsonToString(appInfo))
+//            EventBus.getDefault().post(LanguageEvent())
+            var cotIntent = Intent(baseContext,ControllerActivity::class.java)
+            cotIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            application.startActivity(cotIntent)
+//            Process.killProcess(Process.myPid())
+//            System.exit(0)
         }
     }
 }

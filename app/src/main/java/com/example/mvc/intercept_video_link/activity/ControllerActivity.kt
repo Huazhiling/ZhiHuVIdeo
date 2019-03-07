@@ -1,10 +1,7 @@
 package com.example.mvc.intercept_video_link.activity
 
 import android.annotation.SuppressLint
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -13,6 +10,7 @@ import android.provider.Settings
 import android.support.v4.content.FileProvider
 import android.support.v7.app.AlertDialog
 import android.view.View
+import android.widget.Toast
 import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.FileUtils.*
 import com.blankj.utilcode.util.LogUtils
@@ -44,9 +42,10 @@ import java.util.*
 
 class ControllerActivity : BaseActivity() {
     private lateinit var appInfo: AppInfo
-    private lateinit var urlService: UrlService
+    private var urlService: UrlService? = null
     private lateinit var historyList: HashMap<String, HistoryBean>
     private var videoList = ArrayList<VideoInfo>()
+    private var isBindService = false
 
     override fun getLayoutId(): Int {
         return R.layout.activity_controller
@@ -54,11 +53,10 @@ class ControllerActivity : BaseActivity() {
 
     override fun initView() {
         super.initView()
-        EventBus.getDefault().register(this)
         historyList = HashMap()
         var bindIntent = intent
         bindIntent.setClass(this, UrlService::class.java)
-        bindService(bindIntent, urlConnection, Context.BIND_AUTO_CREATE)
+        isBindService = bindService(bindIntent, urlConnection, Context.BIND_AUTO_CREATE)
         app_clear_cache.setRightString(getDirSize(cacheDir))
     }
 
@@ -148,7 +146,7 @@ class ControllerActivity : BaseActivity() {
                                 fileIntent.addCategory(Intent.CATEGORY_DEFAULT)
                                 fileIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                    fileIntent.setDataAndType(FileProvider.getUriForFile(baseContext, MyApplication.getAppContext()?.packageName + ".fileprovider", file.parentFile), "video/mp4")
+                                    fileIntent.setDataAndType(FileProvider.getUriForFile(baseContext, MyApplication.getAppContext().packageName + ".fileprovider", file.parentFile), "video/mp4")
                                 } else {
                                     fileIntent.setDataAndType(Uri.fromFile(file), "video/mp4")
                                 }
@@ -168,46 +166,67 @@ class ControllerActivity : BaseActivity() {
                     ToastUtils.showShort(R.string.data_chear_cache_failed)
                 }
             }
+//            联系作者
+            R.id.app_contact_author -> {
+                try {
+                    // 获取剪贴板管理服务
+                    var cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    //将文本数据（微信号）复制到剪贴板
+                    cm.primaryClip = ClipData.newPlainText(null, "Scooki_Link1004")
+                    //跳转微信
+                    var intent = Intent(Intent.ACTION_MAIN)
+                    var cmp = ComponentName("com.tencent.mm", "com.tencent.mm.ui.LauncherUI")
+                    intent.addCategory(Intent.CATEGORY_LAUNCHER)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    intent.component = cmp
+                    startActivity(intent)
+                    Toast.makeText(this, "微信号已复制到粘贴板，请使用", Toast.LENGTH_LONG).show()
+                } catch (e: ActivityNotFoundException) {
+                    e.printStackTrace()
+                    Toast.makeText(this, "您还没有安装微信，请安装后使用", Toast.LENGTH_LONG).show()
+                }
+            }
         }
     }
 
     override fun onDestroy() {
-        if (urlService !== null) {
+        if (isBindService) {
             unbindService(urlConnection)
+            isBindService = false
         }
-        EventBus.getDefault().unregister(this)
         super.onDestroy()
     }
 
     private var urlConnection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
-
+            urlService = null
         }
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             if (service is UrlService.UrlBind) {
                 urlService = service.getService()
-                urlService.setParsingCallback(object : ParsingCallback {
+                urlService?.setParsingCallback(object : ParsingCallback {
                     override fun startActivity(context: Context) {
                         startActivityCarryVideoInfo()
                     }
 
                     override fun analysisSourceCode(primary: String) {
-                        urlService.createLoadView()
+                        urlService?.createLoadView()
                         resolveVideo(primary)
                     }
                 })
             }
         }
     }
-
-    @Subscribe
-    fun resetLanguage(language: LanguageEvent) {
-        if (urlService !== null) {
-            unbindService(urlConnection)
-        }
-        recreate()
-    }
+//
+//    @Subscribe
+//    fun resetLanguage(language: LanguageEvent) {
+//        if (isBindService) {
+//            unbindService(urlConnection)
+//            isBindService = false
+//        }
+//        recreate()
+//    }
 
     /**
      * 解析网址
@@ -241,14 +260,14 @@ class ControllerActivity : BaseActivity() {
                         }
                         var history = HistoryBean(url, System.currentTimeMillis(), childHistoryList)
                         historyList[url] = history
-                        urlService.updateView("点击查看视频列表", true)
+                        urlService?.updateView("点击查看视频列表", true)
                         EventBus.getDefault().post(HistoryAddEvent(history))
                     } else {
-                        urlService.updateView("没有视频", false)
+                        urlService?.updateView("没有视频", false)
                     }
                 }, {
                     LogUtils.e(it.message)
-                    urlService.updateView("解析失败", false)
+                    urlService?.updateView("解析失败", false)
                 })
     }
 

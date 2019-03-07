@@ -39,7 +39,6 @@
 
     <com.allen.library.SuperTextView
         android:id="@+id/app_theme"
-        app:sUseRipple="false"
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:onClick="onClick"
@@ -47,7 +46,8 @@
         app:sLeftTextString="@string/main_theme"
         app:sRightTextColor="@color/edit_gray"
         app:sRightTextSize="11sp"
-        app:sRightTextString="极简白" />
+        app:sRightTextString="极简白"
+        app:sUseRipple="false" />
 
     <com.allen.library.SuperTextView
         android:id="@+id/app_backstage"
@@ -124,5 +124,15 @@
         app:sLeftTextColor="@color/window_hint_gray"
         app:sLeftTextString="@string/data_clear_cache"
         app:sRightTextColor="@color/edit_gray"
-        app:sRightTextSize="11sp"/>
+        app:sRightTextSize="11sp" />
+    <!---->
+    <com.allen.library.SuperTextView
+        android:id="@+id/app_contact_author"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:onClick="onClick"
+        app:sLeftTextColor="@color/window_hint_gray"
+        app:sLeftTextString="@string/data_contact_author"
+        app:sRightTextColor="@color/edit_gray"
+        app:sRightTextSize="11sp" />
 </LinearLayout>
