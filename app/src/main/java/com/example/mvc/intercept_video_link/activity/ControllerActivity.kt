@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.*
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.os.Environment
 import android.os.IBinder
 import android.provider.Settings
@@ -53,9 +54,9 @@ class ControllerActivity : BaseActivity() {
 
     override fun initView() {
         super.initView()
+        EventBus.getDefault().register(this)
         historyList = HashMap()
-        var bindIntent = intent
-        bindIntent.setClass(this, UrlService::class.java)
+        var bindIntent = Intent(this, UrlService::class.java)
         isBindService = bindService(bindIntent, urlConnection, Context.BIND_AUTO_CREATE)
         app_clear_cache.setRightString(getDirSize(cacheDir))
     }
@@ -194,6 +195,7 @@ class ControllerActivity : BaseActivity() {
             unbindService(urlConnection)
             isBindService = false
         }
+        EventBus.getDefault().unregister(this)
         super.onDestroy()
     }
 
@@ -205,6 +207,7 @@ class ControllerActivity : BaseActivity() {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             if (service is UrlService.UrlBind) {
                 urlService = service.getService()
+                LogUtils.e(urlService)
                 urlService?.setParsingCallback(object : ParsingCallback {
                     override fun startActivity(context: Context) {
                         startActivityCarryVideoInfo()
@@ -219,14 +222,14 @@ class ControllerActivity : BaseActivity() {
         }
     }
 //
-//    @Subscribe
-//    fun resetLanguage(language: LanguageEvent) {
-//        if (isBindService) {
-//            unbindService(urlConnection)
-//            isBindService = false
-//        }
-//        recreate()
-//    }
+    @Subscribe
+    fun resetLanguage(language: LanguageEvent) {
+        if (isBindService) {
+            unbindService(urlConnection)
+            isBindService = false
+        }
+        recreate()
+    }
 
     /**
      * 解析网址

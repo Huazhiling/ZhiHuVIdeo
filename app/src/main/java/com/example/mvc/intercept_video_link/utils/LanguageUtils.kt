@@ -39,12 +39,10 @@ class LanguageUtils {
             var appInfo = (application as MyApplication).getAppInfo()
             appInfo.appInfo.default_language = language
             SPUtils.getInstance().put(APPINFO, JsonHelper.jsonToString(appInfo))
-//            EventBus.getDefault().post(LanguageEvent())
-            var cotIntent = Intent(baseContext,ControllerActivity::class.java)
-            cotIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            application.startActivity(cotIntent)
-//            Process.killProcess(Process.myPid())
-//            System.exit(0)
+            EventBus.getDefault().post(LanguageEvent())
+//            var cotIntent = Intent(baseContext,ControllerActivity::class.java)
+//            cotIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//            application.startActivity(cotIntent)
         }
     }
 }

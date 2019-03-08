@@ -18,8 +18,8 @@ android {
         applicationId "com.example.mvc.intercept_video_link"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 4
-        versionName "1.4"
+        versionCode 5
+        versionName "1.4.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.config
     }

@@ -110,6 +110,7 @@ class UrlService : Service() {
                 handler.removeCallbacks(run)
             }
         }
+        LogUtils.e(isAndroidVersionAddAFloatingWindow())
         if (isAndroidVersionAddAFloatingWindow()) {
             updateViewLayout(downloadView, downloadLayoutParams)
             handler.postDelayed(run, 3000)
