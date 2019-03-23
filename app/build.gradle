@@ -15,7 +15,7 @@ android {
     }
     compileSdkVersion 27
     defaultConfig {
-        applicationId "com.example.mvc.intercept_video_link"
+        applicationId "com.sd.mvc.intercept_video_link"
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 5
