@@ -13,21 +13,20 @@ import android.view.View
 import android.widget.Toast
 import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.FileUtils.*
-import com.blankj.utilcode.util.LogUtils
+import com.blankj.utilcode.util.SPUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.sd.mvc.intercept_video_link.MyApplication
 import com.sd.mvc.intercept_video_link.R
 import com.sd.mvc.intercept_video_link.bean.AppInfo
 import com.sd.mvc.intercept_video_link.bean.HistoryBean
 import com.sd.mvc.intercept_video_link.bean.VideoInfo
+import com.sd.mvc.intercept_video_link.common.Constant.HISTORY_LIST
 import com.sd.mvc.intercept_video_link.event.HistoryAddEvent
 import com.sd.mvc.intercept_video_link.event.LanguageEvent
 import com.sd.mvc.intercept_video_link.listener.IDialogInterface
 import com.sd.mvc.intercept_video_link.listener.ParsingCallback
 import com.sd.mvc.intercept_video_link.service.UrlService
-import com.sd.mvc.intercept_video_link.utils.DialogHelper
-import com.sd.mvc.intercept_video_link.utils.JsoupHelper
-import com.sd.mvc.intercept_video_link.utils.PatternHelper
+import com.sd.mvc.intercept_video_link.utils.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -39,13 +38,16 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class ControllerActivity : BaseActivity() {
     private lateinit var appInfo: AppInfo
-    private var urlService: UrlService? = null
-    private lateinit var historyList: HashMap<String, HistoryBean>
-    private var videoList = ArrayList<VideoInfo>()
+    private lateinit var primaryKey: String
+    private lateinit var videoInfo: VideoInfo
+    private lateinit var historyList: ArrayList<HistoryBean>
     private var isBindService = false
+    private var urlService: UrlService? = null
 
     override fun getLayoutId(): Int {
         return R.layout.activity_controller
@@ -53,9 +55,12 @@ class ControllerActivity : BaseActivity() {
 
     override fun initView() {
         super.initView()
+        historyList = ArrayList()
         EventBus.getDefault().register(this)
-        historyList = HashMap()
         var bindIntent = Intent(this, UrlService::class.java)
+        if (SPUtils.getInstance().getString(HISTORY_LIST) == "") {
+            SPUtils.getInstance().put(HISTORY_LIST, JsonHelper.jsonToString(HashMap<String, HistoryBean>()))
+        }
         isBindService = bindService(bindIntent, urlConnection, Context.BIND_AUTO_CREATE)
         app_clear_cache.setRightString(getDirSize(cacheDir))
     }
@@ -112,7 +117,7 @@ class ControllerActivity : BaseActivity() {
 //            查看历史
             R.id.app_history_record -> {
                 var videoIntent = Intent(this, VideoHistoryActivity::class.java)
-                videoIntent.putExtra("historyList", historyList)
+//                videoIntent.putExtra("historyList", historyList)
                 startActivity(videoIntent)
             }
 //            删除下载
@@ -191,6 +196,7 @@ class ControllerActivity : BaseActivity() {
 
     override fun onDestroy() {
         if (isBindService) {
+            urlService?.closeSQLite()
             unbindService(urlConnection)
             isBindService = false
         }
@@ -206,7 +212,6 @@ class ControllerActivity : BaseActivity() {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             if (service is UrlService.UrlBind) {
                 urlService = service.getService()
-                LogUtils.e(urlService)
                 urlService?.setParsingCallback(object : ParsingCallback {
                     override fun startActivity(context: Context) {
                         startActivityCarryVideoInfo()
@@ -217,10 +222,12 @@ class ControllerActivity : BaseActivity() {
                         resolveVideo(primary)
                     }
                 })
+
             }
         }
     }
-//
+
+    //
     @Subscribe
     fun resetLanguage(language: LanguageEvent) {
         if (isBindService) {
@@ -239,38 +246,38 @@ class ControllerActivity : BaseActivity() {
 //            ToastUtils.showShort("地址无效")
             return
         }
-        Observable.just(url)
-                .subscribeOn(Schedulers.io())
-                .flatMap {
-                    var httpUrl = URL(it)
-                    var conn = httpUrl.openConnection() as HttpURLConnection
-                    var inStream = conn.inputStream
-                    var htmlSourceCode = String(inStream.readBytes())
-                    videoList.clear()
-                    videoList.addAll(JsoupHelper.getInstance(htmlSourceCode).getAllResource())
-                    Observable.just(videoList)
-                }.observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    if (videoList.size > 0) {
-                        var childHistoryList = ArrayList<HistoryBean.DataBean>()
-                        for (videoInfo in videoList) {
-                            var childHistory = HistoryBean.DataBean(videoInfo.videoSrc
-                                    , if (videoInfo.title === "") SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(Date(System.currentTimeMillis())) else videoInfo.title
-                                    , videoInfo.imgsrc
-                                    , videoInfo.downLoadUrl)
-                            childHistoryList.add(childHistory)
-                        }
-                        var history = HistoryBean(url, System.currentTimeMillis(), childHistoryList)
-                        historyList[url] = history
-                        urlService?.updateView("点击查看视频列表", true)
-                        EventBus.getDefault().post(HistoryAddEvent(history))
-                    } else {
-                        urlService?.updateView("没有视频", false)
+        Observable.create<String> {
+            it.onNext(url)
+        }.subscribeOn(Schedulers.io()).flatMap {
+            var httpUrl = URL(it)
+            var conn = httpUrl.openConnection() as HttpURLConnection
+            var inStream = conn.inputStream
+            var htmlSourceCode = String(inStream.readBytes())
+            LogUtils.e(htmlSourceCode)
+            primaryKey = it
+            videoInfo = JsoupHelper.getInstance(htmlSourceCode).getAllResource()
+            Observable.just(videoInfo.dataBean)
+        }.observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ videoList ->
+            if (videoList!!.size > 0) {
+                if(!urlService?.insertData(primaryKey, videoInfo.title!!, System.currentTimeMillis())!!){
+                    for (videoInfo in videoList) {
+                        urlService?.insertFoxNewData(primaryKey
+                                , videoInfo.videoSrc
+                                , if (videoInfo.zTitle == "") SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(Date(System.currentTimeMillis())) else videoInfo.zTitle
+                                , videoInfo.imgsrc
+                                , videoInfo.downLoadUrl)
                     }
-                }, {
-                    LogUtils.e(it.message)
-                    urlService?.updateView("解析失败", false)
-                })
+                }
+                urlService?.updateView("点击查看视频列表", true)
+                EventBus.getDefault().post(HistoryAddEvent(HistoryBean(null, null, null,null)))
+            } else {
+                urlService?.updateView("没有视频", false)
+            }
+        }, {
+            LogUtils.e(it.message!!)
+            urlService?.updateView("解析失败", false)
+        })
     }
 
     override fun onBackPressed() {
@@ -294,7 +301,7 @@ class ControllerActivity : BaseActivity() {
 
     fun startActivityCarryVideoInfo() {
         var mainIntent = Intent(this, MainActivity::class.java)
-        mainIntent.putParcelableArrayListExtra("videoList", videoList)
+        mainIntent.putExtra("primary_key", primaryKey)
         startActivity(mainIntent)
     }
 }

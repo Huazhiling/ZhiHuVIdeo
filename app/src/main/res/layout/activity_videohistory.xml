@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white"
+    android:background="@color/colorWhite"
     android:orientation="vertical">
 
     <View
@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:padding="40dp"
-            android:text="还没有历史视频哦（目前只能保存临时记录，App退出后记录将被清除）"
+            android:text="还没有历史视频哦"
             android:textSize="17sp" />
 
         <android.support.v7.widget.RecyclerView

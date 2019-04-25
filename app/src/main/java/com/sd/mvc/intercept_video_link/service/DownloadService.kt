@@ -52,6 +52,7 @@ class DownloadService : IntentService("download") {
                 })
     }
 
+
     private fun saveVideo(strem: ResponseBody, videoFile: File): Boolean {
         var ips = strem.byteStream()
         var ops: OutputStream? = null
@@ -60,7 +61,7 @@ class DownloadService : IntentService("download") {
             var byte = ByteArray(1024)
             while (true) {
                 var read = ips.read(byte)
-                if (read === -1) {
+                if (read == -1) {
                     break
                 }
                 ops.write(byte, 0, read)

@@ -1,33 +1,54 @@
 package com.sd.mvc.intercept_video_link.activity
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.view.View
+import com.blankj.utilcode.util.LogUtils
+import com.blankj.utilcode.util.SPUtils
+import com.sd.mvc.intercept_video_link.MyApplication
 import com.sd.mvc.intercept_video_link.R
 import com.sd.mvc.intercept_video_link.adapter.HistoryAdapter
 import com.sd.mvc.intercept_video_link.bean.HistoryBean
 import com.sd.mvc.intercept_video_link.bean.VideoInfo
+import com.sd.mvc.intercept_video_link.common.Constant
+import com.sd.mvc.intercept_video_link.common.Constant.HISTORY_LIST
 import com.sd.mvc.intercept_video_link.event.HistoryAddEvent
+import com.sd.mvc.intercept_video_link.utils.JsonHelper
 import com.sd.mvc.intercept_video_link.utils.RuleRecyclerLines
+import com.sd.mvc.intercept_video_link.utils.RxHelper
+import com.sd.mvc.intercept_video_link.utils.SQLiteHelper
+import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_videohistory.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
 class VideoHistoryActivity : BaseActivity() {
-    private lateinit var historyList: HashMap<String, HistoryBean>
     private lateinit var historyArray: ArrayList<HistoryBean>
     private lateinit var historyAdapter: HistoryAdapter
-
+    private lateinit var sqLiteHelper: SQLiteHelper
+    @SuppressLint("CheckResult")
     override fun initData() {
-        for (mutableEntry in historyList) {
-            historyArray.add(mutableEntry.value)
-            if (historyArray.size > 0) {
-                history_rv.visibility = View.VISIBLE
-                history_null.visibility = View.INVISIBLE
-                historyAdapter.notifyDataSetChanged()
-            } else {
-                history_rv.visibility = View.INVISIBLE
-                history_null.visibility = View.VISIBLE
-            }
+        Observable.create<ArrayList<HistoryBean>> {
+            it.onNext(sqLiteHelper.findAllVideo()!!)
+        }.compose(RxHelper.rxSchedulerHelper())
+                .flatMap {
+                    Observable.just(it)
+                }.subscribe ({
+                    loadHistory(it)
+                },{
+                    error->
+                })
+    }
+
+    private fun loadHistory(it: ArrayList<HistoryBean>?) {
+        if (it!!.size > 0) {
+            historyArray.addAll(it)
+            history_null.visibility = View.INVISIBLE
+            history_rv.visibility = View.VISIBLE
+            historyAdapter.notifyDataSetChanged()
+        } else {
+            history_null.visibility = View.VISIBLE
+            history_rv.visibility = View.INVISIBLE
         }
     }
 
@@ -38,41 +59,35 @@ class VideoHistoryActivity : BaseActivity() {
     override fun initView() {
         super.initView()
         EventBus.getDefault().register(this)
+        sqLiteHelper = SQLiteHelper(baseContext, "fox", null, 1)
         historyArray = ArrayList()
-        historyList = intent.getSerializableExtra("historyList") as HashMap<String, HistoryBean>
         historyAdapter = HistoryAdapter(R.layout.item_history, historyArray)
         history_rv.adapter = historyAdapter
         history_rv.addItemDecoration(RuleRecyclerLines(baseContext, RuleRecyclerLines.HORIZONTAL_LIST, 1))
         historyAdapter.setOnItemChildClickListener { adapter, view, position ->
             when (view.id) {
                 R.id.item_layout -> {
-                    var videoList = ArrayList<VideoInfo>()
-                    var historyData = historyList[historyArray[position].url]!!.dataBean
-                    for (historyDatum in historyData) {
-                        var video = VideoInfo(historyDatum.imageUrl, historyDatum.title, historyDatum.url,historyDatum.downloadUrl)
-                        videoList.add(video)
-                    }
                     var mainIntent = Intent(this, MainActivity::class.java)
-                    VideoInfo
-                    mainIntent.putParcelableArrayListExtra("videoList", videoList)
+                    mainIntent.putExtra("primary_key", historyArray[position].url)
                     startActivity(mainIntent)
                 }
             }
         }
     }
 
+    @SuppressLint("CheckResult")
     @Subscribe
     fun updateList(addEvent: HistoryAddEvent) {
-        historyArray.add(addEvent.historyBean)
-        historyList[addEvent.historyBean.url] = addEvent.historyBean
-        if (historyArray.size > 0) {
-            history_rv.visibility = View.VISIBLE
-            history_null.visibility = View.INVISIBLE
-            historyAdapter.notifyDataSetChanged()
-        } else {
-            history_rv.visibility = View.INVISIBLE
-            history_null.visibility = View.VISIBLE
-        }
+        Observable.create<ArrayList<HistoryBean>> {
+            it.onNext(sqLiteHelper.findAllVideo()!!)
+        }.compose(RxHelper.rxSchedulerHelper())
+                .flatMap {
+                    Observable.just(it)
+                }.subscribe ({
+                    loadHistory(it)
+                },{
+                    error->
+                })
     }
 
     override fun onDestroy() {

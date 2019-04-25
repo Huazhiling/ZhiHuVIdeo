@@ -10,19 +10,22 @@ import java.net.URL
 
 class JsoupHelper {
     companion object {
+        private lateinit var elementHead: Element
         private lateinit var elementBody: Element
         fun getInstance(primary: String): JsoupHelper {
+            elementHead = Jsoup.parse(primary).head()
             elementBody = Jsoup.parse(primary).body()
             return JsoupHelper()
         }
     }
 
-    fun getAllResource(): ArrayList<VideoInfo> {
-        var urlList = ArrayList<VideoInfo>()
+    fun getAllResource(): VideoInfo {
+        var urlList = ArrayList<VideoInfo.DataBean>()
         var thumbnails = elementBody.select("img.thumbnail")
         var videos = elementBody.select("span.content")
-        if (thumbnails.size !== videos.size) {
-            return ArrayList()
+        var title = elementHead.select("title").text()
+        if (thumbnails.size != videos.size) {
+            return VideoInfo(null,ArrayList())
         }
         for (data in thumbnails.indices) {
             var thumbnailElement = thumbnails[data]
@@ -31,10 +34,10 @@ class JsoupHelper {
             var videoUrl = videosElement.select("span.url").text()
             var video_id = videoUrl.substring(videoUrl.lastIndexOf("/") + 1, videoUrl.length)
             var zhihuVideoBean = RetrofitUtils.client(ApiStore::class.java).getVideoInfo(video_id).execute()
-            var video = VideoInfo(thumbnailElement.attr("src"), if (title == "") "暂无标题" else title, zhihuVideoBean.body()!!.playlist.ld.play_url, videoUrl)
+            var video = VideoInfo.DataBean(thumbnailElement.attr("src"), if (title.trim() == "") "暂无标题" else title, zhihuVideoBean.body()!!.playlist.ld.play_url, videoUrl)
             urlList.add(video)
         }
-        return urlList
+        return VideoInfo(title,urlList)
     }
 
     fun getDownLoadUrl(url: String): String {

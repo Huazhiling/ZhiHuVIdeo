@@ -9,7 +9,7 @@ android {
         config {
             keyAlias 'zhihu'
             keyPassword 'android_wwj'
-            storeFile file('E:/AppProject/ZhihuDownloadVideo/zhihuvideo.jks')
+            storeFile file('/Users/wangwenjie/Desktop/AndroidStudioProjects/ZhihuDownloadVideo/zhihuvideo.jks')
             storePassword 'android_wwj'
         }
     }
@@ -18,8 +18,8 @@ android {
         applicationId "com.sd.mvc.intercept_video_link"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 5
-        versionName "1.4.1"
+        versionCode 6
+        versionName "1.5.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.config
     }
