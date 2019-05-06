@@ -3,7 +3,7 @@
     <string name="base_url">https://lens.zhihu.com/</string>
     <!--<string name="base_url">https://vdn2.vzuu.com/</string>-->
     <string name="app_dialog_title">狐Video使用指南</string>
-    <string name="app_help">第一步：打开狐Video\n第二步：打开知乎App（打开知乎网站）\n第三步：复制带有视频的帖子链接\n第四步：返回狐Video，选择喜欢的视频下载\n\n\n\n\n\n如果应用出现崩溃或者无法捕获，可选择联系作者</string>
+    <string name="app_help">第一步：打开狐Video\n第二步：打开知乎App（打开知乎网站）\n第三步：复制带有视频的帖子链接\n第四步：返回狐Video，选择喜欢的视频下载</string>
     <!--主页信息-->
     <string name="main_title">设置</string>
     <string name="main_language">语言</string>
@@ -17,7 +17,7 @@
     <string name="data_delete_download">删除下载视频</string>
     <string name="data_download">打开下载目录</string>
     <string name="data_clear_cache">清空数据缓存</string>
-    <string name="data_contact_author">微信联系作者</string>
+    <string name="data_support">支持一下</string>
     <string name="data_chear_cache_success">清除缓存成功</string>
     <string name="data_chear_cache_failed">清除缓存失败</string>
 </resources>

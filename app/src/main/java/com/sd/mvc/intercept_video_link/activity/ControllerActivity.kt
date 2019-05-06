@@ -43,7 +43,7 @@ import kotlin.collections.HashMap
 
 class ControllerActivity : BaseActivity() {
     private lateinit var appInfo: AppInfo
-    private lateinit var primaryKey: String
+    private var primaryKey = ""
     private lateinit var videoInfo: VideoInfo
     private lateinit var historyList: ArrayList<HistoryBean>
     private var isBindService = false
@@ -171,26 +171,6 @@ class ControllerActivity : BaseActivity() {
                     ToastUtils.showShort(R.string.data_chear_cache_failed)
                 }
             }
-//            联系作者
-            R.id.app_contact_author -> {
-                try {
-                    // 获取剪贴板管理服务
-                    var cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    //将文本数据（微信号）复制到剪贴板
-                    cm.primaryClip = ClipData.newPlainText(null, "Scooki_Link1004")
-                    //跳转微信
-                    var intent = Intent(Intent.ACTION_MAIN)
-                    var cmp = ComponentName("com.tencent.mm", "com.tencent.mm.ui.LauncherUI")
-                    intent.addCategory(Intent.CATEGORY_LAUNCHER)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    intent.component = cmp
-                    startActivity(intent)
-                    Toast.makeText(this, "微信号已复制到粘贴板，请使用", Toast.LENGTH_LONG).show()
-                } catch (e: ActivityNotFoundException) {
-                    e.printStackTrace()
-                    Toast.makeText(this, "您还没有安装微信，请安装后使用", Toast.LENGTH_LONG).show()
-                }
-            }
         }
     }
 
@@ -300,6 +280,10 @@ class ControllerActivity : BaseActivity() {
     }
 
     fun startActivityCarryVideoInfo() {
+        if(primaryKey == ""){
+            Toast.makeText(baseContext,"当前没有视频",Toast.LENGTH_SHORT).show()
+            return
+        }
         var mainIntent = Intent(this, MainActivity::class.java)
         mainIntent.putExtra("primary_key", primaryKey)
         startActivity(mainIntent)

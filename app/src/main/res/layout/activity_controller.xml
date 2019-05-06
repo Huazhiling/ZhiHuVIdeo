@@ -9,12 +9,12 @@
         android:id="@+id/status_bar"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/white" />
+        android:background="@color/colorWhite" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="44dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:gravity="center_vertical"
         android:padding="7dp"
         android:text="@string/main_title"
@@ -64,7 +64,7 @@
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:layout_marginTop="20dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:gravity="center_vertical"
         android:padding="7dp"
         android:text="@string/data_title"
@@ -123,16 +123,6 @@
         android:onClick="onClick"
         app:sLeftTextColor="@color/window_hint_gray"
         app:sLeftTextString="@string/data_clear_cache"
-        app:sRightTextColor="@color/edit_gray"
-        app:sRightTextSize="11sp" />
-    <!---->
-    <com.allen.library.SuperTextView
-        android:id="@+id/app_contact_author"
-        android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:onClick="onClick"
-        app:sLeftTextColor="@color/window_hint_gray"
-        app:sLeftTextString="@string/data_contact_author"
         app:sRightTextColor="@color/edit_gray"
         app:sRightTextSize="11sp" />
 </LinearLayout>

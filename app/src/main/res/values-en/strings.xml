@@ -3,7 +3,7 @@
     <string name="app_name">FoxVideo</string>
     <string name="base_url">https://vdn2.vzuu.com/</string>
     <string name="app_dialog_title">FoxVideo User Guidance</string>
-    <string name="app_help">1.Open foxVideo\n2：Open the Know App（Open the Know Website）\n3.：Copy a post link with a video\n4：back foxVideo，Choose your favorite video download\n\n\n\n\n\nIf the app crashes or cannot be captured, you can choose to contact the author.</string>
+    <string name="app_help">1.Open foxVideo\n2：Open the Know App（Open the Know Website）\n3.：Copy a post link with a video\n4：back foxVideo，Choose your favorite video download</string>
     <!--主页信息-->
     <string name="main_title">Setting</string>
     <string name="main_language">Language</string>
@@ -17,7 +17,7 @@
     <string name="data_delete_download">Delete Download Video</string>
     <string name="data_download">Open Download Directory</string>
     <string name="data_clear_cache">Clear Cache</string>
-    <string name="data_contact_author">WeChat contact author</string>
+    <string name="data_support">Support</string>
     <string name="data_chear_cache_success">Clear cache successfully</string>
     <string name="data_chear_cache_failed">Clear cache failed</string>
 </resources>

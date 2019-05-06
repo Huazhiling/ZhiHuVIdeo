@@ -8,13 +8,12 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.app.ActivityManager
-import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteOpenHelper
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.Handler
 import android.provider.Settings
 import android.view.*
+import android.widget.FrameLayout
 import android.widget.TextView
 import com.sd.mvc.intercept_video_link.R
 import com.sd.mvc.intercept_video_link.listener.ParsingCallback
@@ -29,16 +28,17 @@ class UrlService : Service() {
         private val DOWNLOAD_VIEW = "download_hint"
     }
 
-    private var urlBind = UrlBind()
     private lateinit var am: ActivityManager
     private lateinit var clipManager: ClipboardManager
     private lateinit var windowManager: WindowManager
-    private lateinit var loadLayoutParams: WindowManager.LayoutParams
-    private lateinit var downloadLayoutParams: WindowManager.LayoutParams
+    private lateinit var wmLayoutParams: WindowManager.LayoutParams
     private lateinit var loadView: View
     private lateinit var downloadView: View
     private lateinit var parCallback: ParsingCallback
     private lateinit var sqlite: SQLiteHelper
+    private lateinit var frameLayout: FrameLayout
+    private var isRemove = false
+    private var urlBind = UrlBind()
     private var windowMap = HashMap<String, View>()
     private var handler = Handler()
     private var run = Runnable {
@@ -50,7 +50,25 @@ class UrlService : Service() {
     override fun onCreate() {
         super.onCreate()
         createClipCallback()
+        initWMLayoutParams()
         initZhihuVideoDetect()
+    }
+
+    private fun initWMLayoutParams() {
+        frameLayout = FrameLayout(baseContext)
+        wmLayoutParams = WindowManager.LayoutParams()
+        wmLayoutParams.gravity = Gravity.RIGHT or Gravity.TOP
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            wmLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        } else {
+            wmLayoutParams.type = WindowManager.LayoutParams.TYPE_TOAST
+        }
+        wmLayoutParams.flags = WindowManager.LayoutParams.FLAG_FULLSCREEN or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+        wmLayoutParams.format = PixelFormat.RGBA_8888
+        wmLayoutParams.y = ConvertUtils.dp2px(150)
+        wmLayoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
+        wmLayoutParams.height = ConvertUtils.dp2px(50)
+        wmLayoutParams.windowAnimations = android.R.style.Animation_Translucent
     }
 
     private fun initZhihuVideoDetect() {
@@ -58,49 +76,35 @@ class UrlService : Service() {
     }
 
     fun createLoadView() {
+        if (isRemove) return
+        //只要有解析，都判定为true，下次就忽略解析，为false的时候才进行解析
+        isRemove = true
         if (windowMap[LOAD_VIEW] == null) {
             loadView = LayoutInflater.from(applicationContext).inflate(R.layout.layout_window_load, null)
-            loadLayoutParams = WindowManager.LayoutParams()
-            loadLayoutParams.gravity = Gravity.RIGHT or Gravity.TOP
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                loadLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-            } else {
-                loadLayoutParams.type = WindowManager.LayoutParams.TYPE_TOAST
-            }
-            loadLayoutParams.flags = WindowManager.LayoutParams.FLAG_FULLSCREEN or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
-            loadLayoutParams.format = PixelFormat.RGBA_8888
-            loadLayoutParams.y = ConvertUtils.dp2px(150)
-            loadLayoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
-            loadLayoutParams.height = ConvertUtils.dp2px(50)
-            loadLayoutParams.windowAnimations = android.R.style.Animation_Translucent
             windowMap[LOAD_VIEW] = loadView
         }
+        removeAllViews(windowMap[LOAD_VIEW]!!)
+        frameLayout.addView(windowMap[LOAD_VIEW]!!)
         if (isAndroidVersionAddAFloatingWindow()) {
-            windowManager.addView(windowMap[LOAD_VIEW], loadLayoutParams)
+            windowManager.addView(frameLayout, wmLayoutParams)
         }
     }
 
+    //现将view从原父容器中移除
+    private fun removeAllViews(view: View) {
+        (view.parent as ViewGroup?)?.removeView(view)
+        frameLayout.removeAllViews()
+    }
+
     private fun isAndroidVersionAddAFloatingWindow(): Boolean {
-        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.canDrawOverlays(this))
+        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && Settings.canDrawOverlays(this))
                 || Build.VERSION.SDK_INT < Build.VERSION_CODES.M
     }
 
     fun updateView(msg: String, isClick: Boolean) {
         if (windowMap[DOWNLOAD_VIEW] == null) {
             downloadView = LayoutInflater.from(applicationContext).inflate(R.layout.layout_window_hint, null)
-            downloadLayoutParams = WindowManager.LayoutParams()
-            downloadLayoutParams.gravity = Gravity.RIGHT or Gravity.TOP
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                downloadLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-            } else {
-                downloadLayoutParams.type = WindowManager.LayoutParams.TYPE_TOAST
-            }
-            downloadLayoutParams.flags = WindowManager.LayoutParams.FLAG_FULLSCREEN or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
-            downloadLayoutParams.format = PixelFormat.RGBA_8888
-            downloadLayoutParams.y = ConvertUtils.dp2px(150)
-            downloadLayoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
-            downloadLayoutParams.height = ConvertUtils.dp2px(50)
-            downloadLayoutParams.windowAnimations = android.R.style.Animation_Translucent
             windowMap[DOWNLOAD_VIEW] = downloadView
         }
         downloadView.findViewById<TextView>(R.id.dialog_content).text = msg
@@ -111,27 +115,21 @@ class UrlService : Service() {
                 handler.removeCallbacks(run)
             }
         }
+        removeAllViews(windowMap[DOWNLOAD_VIEW]!!)
+        frameLayout.addView(windowMap[DOWNLOAD_VIEW]!!)
         if (isAndroidVersionAddAFloatingWindow()) {
-            updateViewLayout(downloadView, downloadLayoutParams)
-            handler.postDelayed(run, 3000)
+            updateViewLayout(frameLayout, wmLayoutParams)
+            handler.postDelayed(run, 2500)
         }
     }
 
     private fun updateViewLayout(downloadView: View, downloadLayoutParams: WindowManager.LayoutParams) {
-        removeLoadView()
-        windowManager.addView(downloadView, downloadLayoutParams)
+        windowManager.updateViewLayout(downloadView, downloadLayoutParams)
     }
 
     private fun removeDownloadView() {
-        if (windowMap[DOWNLOAD_VIEW] != null) {
-            windowManager.removeView(windowMap[DOWNLOAD_VIEW])
-        }
-    }
-
-    private fun removeLoadView() {
-        if (windowMap[LOAD_VIEW] != null) {
-            windowManager.removeView(windowMap[LOAD_VIEW])
-        }
+        windowManager.removeView(frameLayout)
+        isRemove = false
     }
 
     fun setParsingCallback(parCallback: ParsingCallback) {
@@ -148,6 +146,7 @@ class UrlService : Service() {
 //        开启监听的时候顺便做数据库操作
         initSQLite()
         clipManager.addPrimaryClipChangedListener {
+            if (isRemove) return@addPrimaryClipChangedListener
             var utlSb = StringBuffer()
             var primary = clipManager.primaryClip.getItemAt(0).text.toString()
             if (primary != "" && PatternHelper.isHttpUrl(primary)) {
@@ -185,8 +184,8 @@ class UrlService : Service() {
         sqlite = SQLiteHelper(baseContext, "fox", null, 1)
     }
 
-    fun insertData(primary: String, title: String, time: Long) :Boolean{
-       return sqlite.insertNewData(primary, title, time)
+    fun insertData(primary: String, title: String, time: Long): Boolean {
+        return sqlite.insertNewData(primary, title, time)
     }
 
     fun insertFoxNewData(primary: String, url: String, title: String, imageUrl: String, downloadUrl: String) {
