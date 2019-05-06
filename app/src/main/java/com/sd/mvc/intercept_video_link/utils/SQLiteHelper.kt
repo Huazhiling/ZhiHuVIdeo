@@ -70,7 +70,6 @@ class SQLiteHelper(context: Context?, name: String?, factory: SQLiteDatabase.Cur
     }
 
     fun findVideoBasedOnThePrimaryKey(url: String): ArrayList<HistoryBean.DataBean>? {
-        LogUtils.e("SELECT * FROM $fox_name WHERE primary_key='$url'")
         var cursor = writableDatabase.rawQuery("SELECT * FROM $fox_name WHERE primary_key='$url'", null)
         var historyChild = ArrayList<HistoryBean.DataBean>()
         if (cursor.count > 0) {

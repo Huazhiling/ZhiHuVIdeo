@@ -3,7 +3,7 @@ package com.sd.mvc.intercept_video_link.utils
 import android.util.Log
 
 object LogUtils {
-    private var isDebug = true
+    private var isDebug = false
     private val I = 0
     private val D = 1
     private val W = 2

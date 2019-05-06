@@ -62,7 +62,6 @@ class MainActivity : BaseActivity() {
                                     }
 
                                     override fun success(i: Int) {
-                                        LogUtils.e("成功")
                                         DownloadUtils.downloadVideo(baseContext, videoInfo[position].downloadUrl)
                                     }
                                 }).requestPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
