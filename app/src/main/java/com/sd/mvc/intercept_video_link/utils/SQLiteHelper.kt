@@ -80,6 +80,7 @@ class SQLiteHelper(context: Context?, name: String?, factory: SQLiteDatabase.Cur
                         , cursor.getString(cursor.getColumnIndex("title"))
                         , cursor.getString(cursor.getColumnIndex("imageUrl"))
                         , cursor.getString(cursor.getColumnIndex("downloadUrl"))))
+                LogUtils.e("${cursor.getString(cursor.getColumnIndex("url"))} ${cursor.getString(cursor.getColumnIndex("title"))} ${cursor.getString(cursor.getColumnIndex("imageUrl"))} ${cursor.getString(cursor.getColumnIndex("downloadUrl"))}")
                 cursor.moveToNext()
             }
             cursor.close()
@@ -91,6 +92,12 @@ class SQLiteHelper(context: Context?, name: String?, factory: SQLiteDatabase.Cur
 
     fun insertFoxNewData(primary_key: String, url: String, title: String, imageUrl: String, downloadUrl: String) {
         writableDatabase.execSQL("INSERT INTO $fox_name (primary_key,url,title,imageUrl,downloadUrl) VALUES ('$primary_key','$url','$title','$imageUrl','$downloadUrl')")
+        writableDatabase.close()
+    }
+
+    fun deleteAllData(){
+        writableDatabase.execSQL("DELETE FROM $name")
+        writableDatabase.execSQL("DELETE FROM $fox_name")
         writableDatabase.close()
     }
 }

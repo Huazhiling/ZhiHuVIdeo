@@ -66,6 +66,7 @@ class DownloadService : IntentService("download") {
                 }
                 ops.write(byte, 0, read)
             }
+            ops.flush()
             return true
         } catch (e: FileNotFoundException) {
             LogUtils.e(e.message)

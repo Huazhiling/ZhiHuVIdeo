@@ -1,6 +1,5 @@
 package com.sd.mvc.intercept_video_link.utils
 
-import com.blankj.utilcode.util.LogUtils
 import com.sd.mvc.intercept_video_link.bean.VideoInfo
 import com.sd.mvc.intercept_video_link.listener.ApiStore
 import org.jsoup.Jsoup
@@ -30,13 +29,15 @@ class JsoupHelper {
         for (data in thumbnails.indices) {
             var thumbnailElement = thumbnails[data]
             var videosElement = videos[data]
-            var title = videosElement.select("span.title").text()
+            var title = "${videosElement.select("span.title").text()}!"
             var videoUrl = videosElement.select("span.url").text()
             var video_id = videoUrl.substring(videoUrl.lastIndexOf("/") + 1, videoUrl.length)
             var zhihuVideoBean = RetrofitUtils.client(ApiStore::class.java).getVideoInfo(video_id).execute()
-            var video = VideoInfo.DataBean(thumbnailElement.attr("src"), if (title.trim() == "") "暂无标题" else title, zhihuVideoBean.body()!!.playlist.ld.play_url, videoUrl)
+            var video = VideoInfo.DataBean(zhihuVideoBean.body()!!.playlist.ld.play_url,videoUrl, thumbnailElement.attr("src"),if (title.trim() == "!") "暂无标题" else title)
+            LogUtils.e("${zhihuVideoBean.body()!!.playlist.ld.play_url} $videoUrl     $videoUrl     ${thumbnailElement.attr("src")}     ${if (title.trim() == "!") "暂无标题" else title}")
             urlList.add(video)
         }
+        LogUtils.e(title)
         return VideoInfo(title,urlList)
     }
 
@@ -65,7 +66,6 @@ class JsoupHelper {
         for (data in videos.indices) {
             var element = videos[data]
             var src = element.getElementsByAttribute("src")
-            LogUtils.e(src)
         }
         return urlList
     }

@@ -24,7 +24,7 @@ object RetrofitUtils {
 
     private val okhttpUtils: OkHttpClient
         get() = OkHttpClient.Builder()
-                .addInterceptor(HttpLoggingInterceptor { message -> LogUtils.e(message) }
+                .addInterceptor(HttpLoggingInterceptor { message -> /*LogUtils.e(message) */}
                         .setLevel(HttpLoggingInterceptor.Level.BODY))
                 .addInterceptor { chain ->
                     val proceed = chain.proceed(chain.request())

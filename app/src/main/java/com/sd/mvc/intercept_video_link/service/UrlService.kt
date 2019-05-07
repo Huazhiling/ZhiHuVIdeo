@@ -18,6 +18,7 @@ import android.widget.TextView
 import com.sd.mvc.intercept_video_link.R
 import com.sd.mvc.intercept_video_link.listener.ParsingCallback
 import com.sd.mvc.intercept_video_link.utils.ConvertUtils
+import com.sd.mvc.intercept_video_link.utils.LogUtils
 import com.sd.mvc.intercept_video_link.utils.PatternHelper
 import com.sd.mvc.intercept_video_link.utils.SQLiteHelper
 
@@ -190,5 +191,9 @@ class UrlService : Service() {
 
     fun insertFoxNewData(primary: String, url: String, title: String, imageUrl: String, downloadUrl: String) {
         sqlite.insertFoxNewData(primary, url, title, imageUrl, downloadUrl)
+    }
+
+    fun deleteAllData() {
+        sqlite.deleteAllData()
     }
 }

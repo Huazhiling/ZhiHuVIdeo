@@ -19,7 +19,7 @@
             android:id="@+id/history_null"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:padding="40dp"
             android:text="还没有历史视频哦"
             android:textSize="17sp" />

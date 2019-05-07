@@ -130,6 +130,7 @@ class ControllerActivity : BaseActivity() {
                             dialog.dismiss()
                             var file = File("${Environment.getExternalStorageDirectory().absolutePath}/ZhiHuVideo/")
                             if (FileUtils.deleteDir(file)) {
+                                urlService!!.deleteAllData()
                                 ToastUtils.showShort("删除成功")
                             } else {
                                 ToastUtils.showShort("删除失败")
@@ -244,7 +245,7 @@ class ControllerActivity : BaseActivity() {
                     for (videoInfo in videoList) {
                         urlService?.insertFoxNewData(primaryKey
                                 , videoInfo.videoSrc
-                                , if (videoInfo.zTitle == "") SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(Date(System.currentTimeMillis())) else videoInfo.zTitle
+                                , if (videoInfo.zTitle == "!") SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(Date(System.currentTimeMillis())) else videoInfo.zTitle
                                 , videoInfo.imgsrc
                                 , videoInfo.downLoadUrl)
                     }
