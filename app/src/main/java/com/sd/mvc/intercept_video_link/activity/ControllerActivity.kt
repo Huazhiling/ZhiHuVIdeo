@@ -15,6 +15,7 @@ import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.FileUtils.*
 import com.blankj.utilcode.util.SPUtils
 import com.blankj.utilcode.util.ToastUtils
+import com.bumptech.glide.Glide
 import com.sd.mvc.intercept_video_link.MyApplication
 import com.sd.mvc.intercept_video_link.R
 import com.sd.mvc.intercept_video_link.bean.AppInfo

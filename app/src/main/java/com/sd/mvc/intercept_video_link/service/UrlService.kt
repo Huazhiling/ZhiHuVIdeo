@@ -59,11 +59,11 @@ class UrlService : Service() {
         frameLayout = FrameLayout(baseContext)
         wmLayoutParams = WindowManager.LayoutParams()
         wmLayoutParams.gravity = Gravity.RIGHT or Gravity.TOP
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            wmLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-        } else {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            wmLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+//        } else {
             wmLayoutParams.type = WindowManager.LayoutParams.TYPE_TOAST
-        }
+//        }
         wmLayoutParams.flags = WindowManager.LayoutParams.FLAG_FULLSCREEN or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
         wmLayoutParams.format = PixelFormat.RGBA_8888
         wmLayoutParams.y = ConvertUtils.dp2px(150)

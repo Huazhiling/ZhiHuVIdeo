@@ -2,10 +2,9 @@ package com.sd.mvc.intercept_video_link.activity
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.*
-import android.support.v7.app.AlertDialog
 import android.view.View
-import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.sd.mvc.intercept_video_link.R
 import com.sd.mvc.intercept_video_link.adapter.VideoAdapter
