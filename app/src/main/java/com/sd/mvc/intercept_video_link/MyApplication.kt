@@ -1,6 +1,11 @@
 package com.sd.mvc.intercept_video_link
 
 import android.app.Application
+import android.util.Log
+import cdc.sed.yff.AdManager
+import cdc.sed.yff.nm.sp.SpotManager
+import cdc.sed.yff.nm.sp.SpotRequestListener
+import cn.jiguang.analytics.android.api.JAnalyticsInterface
 import com.blankj.utilcode.util.SPUtils
 import com.blankj.utilcode.util.Utils
 import com.sd.mvc.intercept_video_link.bean.AppInfo
@@ -48,6 +53,18 @@ class MyApplication : Application() {
             appInfo = JsonHelper.stringToJson(app, AppInfo::class.java) as AppInfo
             JsonHelper.jsonToString(appInfo)
         }
+        JAnalyticsInterface.init(getAppContext())
+        AdManager.getInstance(getAppContext()).init("90373a6b4018b930","614b21e9fb3e5cb4",true)
+        SpotManager.getInstance(getAppContext()).requestSpot(object : SpotRequestListener {
+            override fun onRequestFailed(p0: Int) {
+                Log.e("MyApplication","spot初始化失败")
+            }
+
+            override fun onRequestSuccess() {
+                Log.e("MyApplication","spot初始化成功")
+            }
+
+        })
     }
 
     fun getAppInfo(): AppInfo {

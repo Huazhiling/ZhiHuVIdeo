@@ -11,6 +11,7 @@ import android.support.v4.content.FileProvider
 import android.support.v7.app.AlertDialog
 import android.view.View
 import android.widget.Toast
+import cdc.sed.yff.nm.sp.SpotManager
 import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.FileUtils.*
 import com.blankj.utilcode.util.SPUtils
@@ -173,6 +174,11 @@ class ControllerActivity : BaseActivity() {
                     ToastUtils.showShort(R.string.data_chear_cache_failed)
                 }
             }
+
+            R.id.app_support->{
+                startActivity(Intent(baseContext,SupportActivity::class.java))
+            }
+
         }
     }
 
@@ -183,6 +189,7 @@ class ControllerActivity : BaseActivity() {
             isBindService = false
         }
         EventBus.getDefault().unregister(this)
+        SpotManager.getInstance(MyApplication.getAppContext()).onAppExit();
         super.onDestroy()
     }
 
