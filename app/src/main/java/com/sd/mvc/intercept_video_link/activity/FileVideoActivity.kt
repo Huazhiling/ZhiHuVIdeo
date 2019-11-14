@@ -68,6 +68,8 @@ class FileVideoActivity : BaseActivity() {
             }else{
                 uriForFile = Uri.fromFile(path)
             }
+            openVideo.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            openVideo.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             openVideo.setDataAndType(uriForFile, "video/*")
             startActivity(openVideo)
         }

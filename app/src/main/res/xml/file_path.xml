@@ -4,11 +4,11 @@
         <root-path
             name="external_file"
             path="" />
+        <cache-path
+            name="cache-path"
+            path="" />
+        <external-path
+            name="external-path"
+            path="" />
     </paths>
-    <cache-path
-        name="apk1"
-        path="." />
-    <external-path
-        name="apk2"
-        path="." />
 </resource>
