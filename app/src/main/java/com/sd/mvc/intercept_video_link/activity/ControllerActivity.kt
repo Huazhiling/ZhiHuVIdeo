@@ -3,32 +3,22 @@ package com.sd.mvc.intercept_video_link.activity
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.*
-import android.net.Uri
-import android.os.Build
 import android.os.Environment
 import android.os.IBinder
-import android.provider.Settings
-import android.support.v4.content.FileProvider
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import cdc.sed.yff.nm.sp.SpotManager
-import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.FileUtils.*
 import com.blankj.utilcode.util.SPUtils
 import com.blankj.utilcode.util.ToastUtils
-import com.bumptech.glide.Glide
-import com.sd.mvc.intercept_video_link.MyApplication
 import com.sd.mvc.intercept_video_link.R
-import com.sd.mvc.intercept_video_link.bean.AppInfo
 import com.sd.mvc.intercept_video_link.bean.HistoryBean
 import com.sd.mvc.intercept_video_link.bean.VideoInfo
 import com.sd.mvc.intercept_video_link.common.Constant.HISTORY_LIST
 import com.sd.mvc.intercept_video_link.event.HistoryAddEvent
 import com.sd.mvc.intercept_video_link.event.LanguageEvent
-import com.sd.mvc.intercept_video_link.listener.IDialogInterface
 import com.sd.mvc.intercept_video_link.listener.ParsingCallback
 import com.sd.mvc.intercept_video_link.service.UrlService
 import com.sd.mvc.intercept_video_link.utils.*
@@ -101,7 +91,7 @@ class ControllerActivity : BaseActivity() {
             }
 //            查看当前
             R.id.app_current_record -> {
-                startActivityCarryVideoInfo()
+                startActivityCurrentVideoInfo()
             }
 //            查看历史
             R.id.app_history_record -> {
@@ -118,7 +108,7 @@ class ControllerActivity : BaseActivity() {
                         .setPositiveButton("是") { dialog, which ->
                             dialog.dismiss()
                             var file = File("${Environment.getExternalStorageDirectory().absolutePath}/ZhiHuVideo/")
-                            if (FileUtils.deleteDir(file)) {
+                            if (deleteDir(file)) {
                                 urlService!!.deleteAllData()
                                 ToastUtils.showShort("删除成功")
                             } else {
@@ -133,7 +123,7 @@ class ControllerActivity : BaseActivity() {
             }
 //            清除缓存
             R.id.app_clear_cache -> {
-                if (FileUtils.deleteDir(cacheDir)) {
+                if (deleteDir(cacheDir)) {
                     ToastUtils.showShort(R.string.data_chear_cache_success)
                     app_clear_cache.setRightString(getDirSize(cacheDir))
                 } else {
@@ -168,14 +158,16 @@ class ControllerActivity : BaseActivity() {
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             if (service is UrlService.UrlBind) {
+                //获取service  搭建起沟通的桥梁
                 urlService = service.getService()
                 urlService?.setParsingCallback(object : ParsingCallback {
                     override fun startActivity(context: Context) {
-//                        startActivityCarryVideoInfo()
+//                        startActivityCurrentVideoInfo()
                     }
 
                     override fun analysisSourceCode(primary: String) {
                         urlService?.createLoadView()
+                        //解析数据
                         resolveVideo(primary)
                     }
                 })
@@ -219,6 +211,7 @@ class ControllerActivity : BaseActivity() {
                     if (videoList!!.size > 0) {
                         if (!urlService?.insertData(primaryKey, videoInfo.title!!, System.currentTimeMillis())!!) {
                             for (videoInfo in videoList) {
+                                //插入数据到数据库
                                 urlService?.insertFoxNewData(primaryKey
                                         , videoInfo.videoSrc
                                         , if (videoInfo.zTitle == "!") SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(Date(System.currentTimeMillis())) else videoInfo.zTitle
@@ -241,7 +234,7 @@ class ControllerActivity : BaseActivity() {
         moveTaskToBack(true)
     }
 
-    fun startActivityCarryVideoInfo() {
+    private fun startActivityCurrentVideoInfo() {
         if (primaryKey == "") {
             Toast.makeText(baseContext, "当前没有视频", Toast.LENGTH_SHORT).show()
             return
