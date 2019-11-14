@@ -1,6 +1,7 @@
 package com.sd.mvc.intercept_video_link.activity
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.*
 import android.net.Uri
 import android.os.Build
@@ -9,7 +10,9 @@ import android.os.IBinder
 import android.provider.Settings
 import android.support.v4.content.FileProvider
 import android.support.v7.app.AlertDialog
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import cdc.sed.yff.nm.sp.SpotManager
 import com.blankj.utilcode.util.FileUtils
@@ -33,6 +36,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_controller.*
+import kotlinx.android.synthetic.main.layout_dialog.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.io.File
@@ -44,11 +48,13 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class ControllerActivity : BaseActivity() {
-    private lateinit var appInfo: AppInfo
+    //插入数据库时候的键
     private var primaryKey = ""
+    //保存视频信息
     private lateinit var videoInfo: VideoInfo
     private lateinit var historyList: ArrayList<HistoryBean>
     private var isBindService = false
+    //service交互用
     private var urlService: UrlService? = null
 
     override fun getLayoutId(): Int {
@@ -68,33 +74,19 @@ class ControllerActivity : BaseActivity() {
     }
 
     override fun initData() {
-        DialogHelper.getInstance().createHintDialog(this, getString(R.string.app_help), getString(R.string.app_dialog_title), object : IDialogInterface {
-            override fun clickCallback(view: View) {
+        createHintDialog(this, getString(R.string.app_help), getString(R.string.app_dialog_title)).show()
+    }
 
-            }
-
-            override fun dismissCallback() {
-                //检查悬浮窗权限
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (!Settings.canDrawOverlays(this@ControllerActivity)) {
-                        AlertDialog.Builder(this@ControllerActivity)
-                                .setTitle("请求开启权限")
-                                .setMessage("开启悬浮窗权限之后能够更方便的获取到知乎视频\n建议开启")
-                                .setNegativeButton("取消") { dialog, which -> dialog.dismiss() }
-                                .setPositiveButton("开启") { dialog, which ->
-                                    dialog.dismiss()
-                                    var intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
-                                    startActivityForResult(intent, 300)
-                                }
-                                .show()
-                    } else {
-                        app_backstage.setRightString("已开启")
-                    }
-                } else {
-                    app_backstage.setRightString("已开启")
-                }
-            }
-        }).show()
+    private fun createHintDialog(context: Context, msg: String, title: String): Dialog {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.layout_dialog, null)
+        var mDialog = Dialog(context, R.style.hint_dialog)
+        dialogView.dialog_title.text = title
+        dialogView.dialog_content.text = msg
+        dialogView.dialog_dismiss.setOnClickListener { mDialog.dismiss() }
+        mDialog.setContentView(dialogView)
+        //一定要在setContentView之后调用，否则无效
+        mDialog.window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        return mDialog
     }
 
     fun onClick(view: View) {
@@ -106,11 +98,6 @@ class ControllerActivity : BaseActivity() {
 //            设置主题
             R.id.app_theme -> {
                 ToastUtils.showShort("暂未开放")
-            }
-//            设置悬浮窗
-            R.id.app_backstage -> {
-                var intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
-                startActivityForResult(intent, 300)
             }
 //            查看当前
             R.id.app_current_record -> {
@@ -142,7 +129,7 @@ class ControllerActivity : BaseActivity() {
             }
 //            打开下载
             R.id.app_open_download -> {
-                startActivity(Intent(baseContext,FileVideoActivity::class.java))
+                startActivity(Intent(baseContext, FileVideoActivity::class.java))
             }
 //            清除缓存
             R.id.app_clear_cache -> {
@@ -153,12 +140,12 @@ class ControllerActivity : BaseActivity() {
                     ToastUtils.showShort(R.string.data_chear_cache_failed)
                 }
             }
-            R.id.app_update_log->{
-                startActivity(Intent(baseContext,UpdateLogActivity::class.java))
+            R.id.app_update_log -> {
+                startActivity(Intent(baseContext, UpdateLogActivity::class.java))
             }
 
-            R.id.app_support->{
-                startActivity(Intent(baseContext,SupportActivity::class.java))
+            R.id.app_support -> {
+                startActivity(Intent(baseContext, SupportActivity::class.java))
             }
 
         }
@@ -184,7 +171,7 @@ class ControllerActivity : BaseActivity() {
                 urlService = service.getService()
                 urlService?.setParsingCallback(object : ParsingCallback {
                     override fun startActivity(context: Context) {
-                        startActivityCarryVideoInfo()
+//                        startActivityCarryVideoInfo()
                     }
 
                     override fun analysisSourceCode(primary: String) {
@@ -229,49 +216,34 @@ class ControllerActivity : BaseActivity() {
             Observable.just(videoInfo.dataBean)
         }.observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ videoList ->
-            if (videoList!!.size > 0) {
-                if(!urlService?.insertData(primaryKey, videoInfo.title!!, System.currentTimeMillis())!!){
-                    for (videoInfo in videoList) {
-                        urlService?.insertFoxNewData(primaryKey
-                                , videoInfo.videoSrc
-                                , if (videoInfo.zTitle == "!") SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(Date(System.currentTimeMillis())) else videoInfo.zTitle
-                                , videoInfo.imgsrc
-                                , videoInfo.downLoadUrl)
+                    if (videoList!!.size > 0) {
+                        if (!urlService?.insertData(primaryKey, videoInfo.title!!, System.currentTimeMillis())!!) {
+                            for (videoInfo in videoList) {
+                                urlService?.insertFoxNewData(primaryKey
+                                        , videoInfo.videoSrc
+                                        , if (videoInfo.zTitle == "!") SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(Date(System.currentTimeMillis())) else videoInfo.zTitle
+                                        , videoInfo.imgsrc
+                                        , videoInfo.downLoadUrl)
+                            }
+                        }
+                        ToastUtils.showShort("添加下载队列成功")
+                        EventBus.getDefault().post(HistoryAddEvent(HistoryBean(null, null, null, null)))
+                    } else {
+                        ToastUtils.showShort("没有视频")
                     }
-                }
-                urlService?.updateView("点击查看视频列表", true)
-                EventBus.getDefault().post(HistoryAddEvent(HistoryBean(null, null, null,null)))
-            } else {
-                urlService?.updateView("没有视频", false)
-            }
-        }, {
-            LogUtils.e(it.message!!)
-            urlService?.updateView("解析失败", false)
-        })
+                }, {
+                    LogUtils.e(it.message!!)
+                    ToastUtils.showShort("解析失败")
+                })
     }
 
     override fun onBackPressed() {
         moveTaskToBack(true)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            //申请悬浮窗权限
-            300 -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (!Settings.canDrawOverlays(this@ControllerActivity)) {
-                        app_backstage.setRightString("已关闭")
-                    } else {
-                        app_backstage.setRightString("已开启")
-                    }
-                }
-            }
-        }
-    }
-
     fun startActivityCarryVideoInfo() {
-        if(primaryKey == ""){
-            Toast.makeText(baseContext,"当前没有视频",Toast.LENGTH_SHORT).show()
+        if (primaryKey == "") {
+            Toast.makeText(baseContext, "当前没有视频", Toast.LENGTH_SHORT).show()
             return
         }
         var mainIntent = Intent(this, MainActivity::class.java)

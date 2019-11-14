@@ -13,7 +13,7 @@
     <string name="main_default_theme">极简白</string>
     <string name="main_default_language">简体中文</string>
     <string name="data_title">数据中心</string>
-    <string name="data_current_record">当前记录</string>
+    <string name="download_list">下载队列</string>
     <string name="data_history">历史记录</string>
     <string name="data_delete_download">删除下载视频</string>
     <string name="data_download">打开下载目录</string>

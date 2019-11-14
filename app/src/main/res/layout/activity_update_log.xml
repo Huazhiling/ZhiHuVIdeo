@@ -47,6 +47,15 @@
         android:layout_height="wrap_content"
         android:paddingLeft="30dp"
         android:paddingRight="30dp"
-        android:text="1.新增用户系统, 保存历史记录至云端\n\n2.新增下载管理模块,支持多个视频同时下载"
+        android:text="1.新增用户系统, 保存历史记录至云端\n\n2.新增下载管理模块,支持多个视频同时下载\n\n3.新增反馈入口"
         android:textSize="17sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:textColor="#FF0000"
+        android:text="Ps : 由于Android在Q之后已经移除了悬浮窗权限, 所以为了部分手机能够正常使用, App暂时关闭了悬浮窗功能, 在复制成功之后并不会有提示, 实际上已经可以返回下载了, 提示功能将在后几个版本重新推出" />
 </LinearLayout>

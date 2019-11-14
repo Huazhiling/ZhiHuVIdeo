@@ -6,7 +6,6 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
-import android.media.MediaRecorder
 import android.os.Environment
 import android.util.Log
 import android.view.View
@@ -14,17 +13,19 @@ import com.blankj.utilcode.util.FileUtils.getFileSize
 import com.blankj.utilcode.util.ToastUtils
 import com.per.rslibrary.IPermissionRequest
 import com.per.rslibrary.RsPermission
-import com.sd.mvc.intercept_video_link.R
 import com.sd.mvc.intercept_video_link.adapter.MediaAdapter
 import com.sd.mvc.intercept_video_link.bean.MediaBean
-import com.sd.mvc.intercept_video_link.utils.DownloadUtils
 import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_file_video.*
 import java.io.File
 import java.io.FileFilter
 import java.util.ArrayList
+import android.net.Uri
+import android.os.Build
+import android.support.v4.content.FileProvider
+import com.sd.mvc.intercept_video_link.BuildConfig
+
 
 class FileVideoActivity : BaseActivity() {
     private var mediaList = ArrayList<MediaBean>()
@@ -55,8 +56,21 @@ class FileVideoActivity : BaseActivity() {
         progressDialog = ProgressDialog(this)
         progressDialog.setCancelable(false)
         progressDialog.setCanceledOnTouchOutside(false)
-        mediaAdapter = MediaAdapter(R.layout.layout_file_video, mediaList)
+        mediaAdapter = MediaAdapter(com.sd.mvc.intercept_video_link.R.layout.layout_file_video, mediaList)
         video_rv.adapter = mediaAdapter
+        mediaAdapter.setOnItemChildClickListener { adapter, view, position ->
+            var path = File(mediaList[position].path)
+            val openVideo = Intent(Intent.ACTION_VIEW)
+            val uriForFile : Uri
+            //N 以后文件共享更加严格 需要fileProvider
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+                uriForFile = FileProvider.getUriForFile(baseContext, BuildConfig.APPLICATION_ID + ".fileProvider", path)
+            }else{
+                uriForFile = Uri.fromFile(path)
+            }
+            openVideo.setDataAndType(uriForFile, "video/*")
+            startActivity(openVideo)
+        }
         video_back.setOnClickListener { finish() }
         data_null.setOnClickListener { searchFile() }
     }
@@ -99,7 +113,7 @@ class FileVideoActivity : BaseActivity() {
     }
 
     override fun getLayoutId(): Int {
-        return R.layout.activity_file_video
+        return com.sd.mvc.intercept_video_link.R.layout.activity_file_video
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

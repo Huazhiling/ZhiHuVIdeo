@@ -122,4 +122,8 @@ class MainActivity : BaseActivity() {
         EventBus.getDefault().unregister(this)
         super.onDestroy()
     }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        RsPermission.getInstance().onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
 }

@@ -1,10 +1,6 @@
 package com.sd.mvc.intercept_video_link
 
 import android.app.Application
-import android.util.Log
-import cdc.sed.yff.AdManager
-import cdc.sed.yff.nm.sp.SpotManager
-import cdc.sed.yff.nm.sp.SpotRequestListener
 import cn.jiguang.analytics.android.api.JAnalyticsInterface
 import com.blankj.utilcode.util.SPUtils
 import com.blankj.utilcode.util.Utils
@@ -44,7 +40,7 @@ class MyApplication : Application() {
                     , languageList
                     , themeList)
             var appContentBean = AppInfo.AppDataBeanBean(getString(R.string.data_title)
-                    , getString(R.string.data_current_record)
+                    , getString(R.string.download_list)
                     , getString(R.string.data_history)
                     , getString(R.string.data_download))
             appInfo = AppInfo(appInfoBean, appContentBean)

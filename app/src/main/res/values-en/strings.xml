@@ -13,7 +13,7 @@
     <string name="main_default_theme">Simple White</string>
     <string name="main_default_language">English</string>
     <string name="data_title">Data Center</string>
-    <string name="data_current_record">Current Record</string>
+    <string name="download_list">Download Queue</string>
     <string name="data_history">History Record</string>
     <string name="data_delete_download">Delete Download Video</string>
     <string name="data_download">Open Download Directory</string>

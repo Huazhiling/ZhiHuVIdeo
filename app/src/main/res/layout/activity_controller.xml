@@ -49,17 +49,6 @@
         app:sRightTextString="极简白"
         app:sUseRipple="false" />
 
-    <com.allen.library.SuperTextView
-        android:id="@+id/app_backstage"
-        android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:onClick="onClick"
-        app:sLeftTextColor="@color/window_hint_gray"
-        app:sLeftTextString="@string/main_service"
-        app:sRightTextColor="@color/edit_gray"
-        app:sRightTextSize="11sp"
-        app:sRightTextString="已关闭" />
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="44dp"
@@ -82,7 +71,7 @@
         android:layout_height="44dp"
         android:onClick="onClick"
         app:sLeftTextColor="@color/window_hint_gray"
-        app:sLeftTextString="@string/data_current_record"
+        app:sLeftTextString="@string/download_list"
         app:sRightTextColor="@color/edit_gray"
         app:sRightTextSize="11sp" />
 

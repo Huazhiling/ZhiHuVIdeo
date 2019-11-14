@@ -37,6 +37,17 @@ android {
         }
 
     }
+    //指定打包后应用名称
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def outputFile = output.outputFile
+            if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                def fileName = outputFile.name.replace(".apk", "狐_${defaultConfig.versionName}.apk")
+                outputFileName = fileName
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
