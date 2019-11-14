@@ -142,28 +142,7 @@ class ControllerActivity : BaseActivity() {
             }
 //            打开下载
             R.id.app_open_download -> {
-                AlertDialog.Builder(this@ControllerActivity)
-                        .setTitle("打开文件夹")
-                        .setMessage("即将离开App，前往下载目录，是否前往？")
-                        .setNegativeButton("否") { dialog, which -> dialog.dismiss() }
-                        .setPositiveButton("是") { dialog, which ->
-                            dialog.dismiss()
-                            var file = File("${Environment.getExternalStorageDirectory().absolutePath}/ZhiHuVideo/")
-                            if (file.exists()) {
-                                var fileIntent = Intent(Intent.ACTION_GET_CONTENT)
-                                fileIntent.addCategory(Intent.CATEGORY_DEFAULT)
-                                fileIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                    fileIntent.setDataAndType(FileProvider.getUriForFile(baseContext, MyApplication.getAppContext().packageName + ".fileprovider", file.parentFile), "video/mp4")
-                                } else {
-                                    fileIntent.setDataAndType(Uri.fromFile(file), "video/mp4")
-                                }
-                                startActivity(fileIntent)
-                            } else {
-                                ToastUtils.showShort("还没有下载文件")
-                            }
-                        }
-                        .show()
+                startActivity(Intent(baseContext,FileVideoActivity::class.java))
             }
 //            清除缓存
             R.id.app_clear_cache -> {
