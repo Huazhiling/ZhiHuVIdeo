@@ -17,35 +17,6 @@ class SupportActivity : BaseActivity() {
 
     override fun initView() {
         super.initView()
-        SpotManager.getInstance(MyApplication.getAppContext()).setImageType(SpotManager.IMAGE_TYPE_VERTICAL)
-        var nativeView = SpotManager.getInstance(MyApplication.getAppContext()).getNativeSpot(this, object : SpotListener {
-            override fun onSpotClicked(p0: Boolean) {
-                Log.e("SupportActivity", "onSpotClicked")
-            }
-
-            override fun onShowSuccess() {
-                Log.e("SupportActivity", "onShowSuccess")
-            }
-
-            override fun onShowFailed(errorCode: Int) {
-                when (errorCode) {
-                    ErrorCode.NON_NETWORK -> ToastUtils.showShort("网络异常")
-                    ErrorCode.NON_AD -> ToastUtils.showShort("还没有准备好哦")
-                    ErrorCode.RESOURCE_NOT_READY -> ToastUtils.showShort("还没有准备好哦")
-                    ErrorCode.SHOW_INTERVAL_LIMITED -> ToastUtils.showShort("请勿频繁点击")
-                    else -> ToastUtils.showShort("请稍后再试")
-                }
-                finish()
-            }
-
-            override fun onSpotClosed() {
-                Log.e("SupportActivity", "onSpotClosed")
-            }
-        })
-        if (nativeView != null) {
-            support_parent.addView(nativeView)
-        }
-
     }
 
     override fun getLayoutId(): Int {

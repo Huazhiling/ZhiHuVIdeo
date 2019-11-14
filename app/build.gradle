@@ -9,7 +9,8 @@ android {
         config {
             keyAlias 'zhihu'
             keyPassword 'android_wwj'
-            storeFile file('/Users/wangwenjie/Desktop/AndroidStudioProjects/ZhihuDownloadVideo/zhihuvideo.jks')
+//            storeFile file('/Users/wangwenjie/Desktop/AndroidStudioProjects/ZhihuDownloadVideo/zhihuvideo.jks')
+            storeFile file('D:/project/ZhiHuVideozhihuvideo.jks')
             storePassword 'android_wwj'
         }
     }
@@ -18,8 +19,8 @@ android {
         applicationId "com.sd.mvc.intercept_video_link"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 9
-        versionName "1.5.4"
+        versionCode 11
+        versionName "1.5.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.config
 
@@ -92,7 +93,6 @@ dependencies {
     implementation 'cn.jiguang.sdk:jcore:1.2.6'
     //广告
     implementation fileTree(dir: 'libs', include: ['*.aar'])
-    implementation(name: 'YoumiSdk_v8.3.0', ext: 'aar')
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

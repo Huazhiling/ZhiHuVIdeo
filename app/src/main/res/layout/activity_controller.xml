@@ -127,9 +127,19 @@
         app:sRightTextSize="11sp" />
 
     <com.allen.library.SuperTextView
-        android:id="@+id/app_support"
+        android:id="@+id/app_update_log"
         android:layout_width="match_parent"
         android:layout_marginTop="20dp"
+        android:layout_height="44dp"
+        android:onClick="onClick"
+        app:sLeftTextColor="@color/window_hint_gray"
+        app:sLeftTextString="@string/update_log"
+        app:sRightTextColor="@color/edit_gray"
+        app:sRightTextSize="11sp" />
+    <com.allen.library.SuperTextView
+        android:visibility="invisible"
+        android:id="@+id/app_support"
+        android:layout_width="match_parent"
         android:layout_height="44dp"
         android:onClick="onClick"
         app:sLeftTextColor="@color/window_hint_gray"

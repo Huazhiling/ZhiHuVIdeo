@@ -54,17 +54,6 @@ class MyApplication : Application() {
             JsonHelper.jsonToString(appInfo)
         }
         JAnalyticsInterface.init(getAppContext())
-        AdManager.getInstance(getAppContext()).init("90373a6b4018b930","614b21e9fb3e5cb4",true)
-        SpotManager.getInstance(getAppContext()).requestSpot(object : SpotRequestListener {
-            override fun onRequestFailed(p0: Int) {
-                Log.e("MyApplication","spot初始化失败")
-            }
-
-            override fun onRequestSuccess() {
-                Log.e("MyApplication","spot初始化成功")
-            }
-
-        })
     }
 
     fun getAppInfo(): AppInfo {

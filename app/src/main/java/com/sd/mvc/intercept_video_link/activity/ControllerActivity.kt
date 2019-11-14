@@ -174,6 +174,9 @@ class ControllerActivity : BaseActivity() {
                     ToastUtils.showShort(R.string.data_chear_cache_failed)
                 }
             }
+            R.id.app_update_log->{
+                startActivity(Intent(baseContext,UpdateLogActivity::class.java))
+            }
 
             R.id.app_support->{
                 startActivity(Intent(baseContext,SupportActivity::class.java))
@@ -189,7 +192,6 @@ class ControllerActivity : BaseActivity() {
             isBindService = false
         }
         EventBus.getDefault().unregister(this)
-        SpotManager.getInstance(MyApplication.getAppContext()).onAppExit();
         super.onDestroy()
     }
 
