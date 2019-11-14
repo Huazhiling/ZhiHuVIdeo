@@ -7,6 +7,7 @@
     <!--主页信息-->
     <string name="main_title">设置</string>
     <string name="main_language">语言</string>
+    <string name="document">文件列表</string>
     <string name="main_theme">主题</string>
     <string name="main_service">后台监听服务</string>
     <string name="main_default_theme">极简白</string>
