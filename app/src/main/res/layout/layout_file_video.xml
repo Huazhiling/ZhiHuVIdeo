@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_marginBottom="20dp"
+    android:layout_height="220dp">
+
+    <ImageView
+        android:id="@+id/file_thumbnail"
+        android:scaleType="fitXY"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/file_name"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_alignParentBottom="true"
+        android:background="#AA333333"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:text="ZhihuZhihuZhihuZhihuZhihuZhihuZhihuZhihuZhihuZhihuZhihuZhihuZhihu"
+        android:singleLine="true"
+        android:paddingRight="70dp"
+        android:textColor="@color/white"
+        android:textSize="15sp" />
+    <TextView
+        android:id="@+id/file_size"
+        android:layout_width="wrap_content"
+        android:drawableLeft="@drawable/ic_sd_card"
+        android:drawablePadding="5dp"
+        android:gravity="center_vertical"
+        android:background="#AA333333"
+        android:textColor="@color/white"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:textSize="13sp"
+        android:text="2.3M"
+        android:layout_height="44dp" />
+</RelativeLayout>
