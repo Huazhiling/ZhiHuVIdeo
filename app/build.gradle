@@ -14,11 +14,11 @@ android {
             storePassword 'android_wwj'
         }
     }
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         applicationId "com.sd.mvc.intercept_video_link"
         minSdkVersion 19
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 11
         versionName "1.5.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -78,8 +78,8 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.android.support:appcompat-v7:27+'
-    implementation 'com.android.support:support-v4:27+'
+    implementation 'com.android.support:appcompat-v7:28+'
+    implementation 'com.android.support:support-v4:28+'
     //Utils
     implementation 'com.blankj:utilcode:1.22.0'
     implementation 'org.jsoup:jsoup:1.11.3'
@@ -107,5 +107,5 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'com.android.support:design:27+'
+    implementation 'com.android.support:design:28+'
 }

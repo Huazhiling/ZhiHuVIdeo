@@ -20,10 +20,10 @@ class RuleRecyclerLines(private val mContext: Context, orientation: Int, height:
     private var height = 0
 
     //由于Divider也有长宽高，每一个Item需要向下或者向右偏移
-    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State?) {
+    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         if (mOrientation == HORIZONTAL_LIST) {
             //画横线，就是往下偏移一个分割线的高度
-            if (parent.getChildAdapterPosition(view) != parent.adapter.itemCount - 1) {
+            if (parent.getChildAdapterPosition(view) != parent.adapter!!.itemCount - 1) {
                 outRect.set(0, 0, 0, ConvertUtils.dp2px(height))
             }
         } else {
@@ -51,7 +51,7 @@ class RuleRecyclerLines(private val mContext: Context, orientation: Int, height:
         mOrientation = orientation
     }
 
-    override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State?) {
+    override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         if (mOrientation == HORIZONTAL_LIST) {
             drawHorizontalLine(c, parent, state)
         } else {
