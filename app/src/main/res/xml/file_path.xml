@@ -10,5 +10,7 @@
         <external-path
             name="external-path"
             path="" />
+        <external-path path="mimoDownload" name="files_root" />
+        <external-path path="." name="external_storage_root" />
     </paths>
 </resource>
