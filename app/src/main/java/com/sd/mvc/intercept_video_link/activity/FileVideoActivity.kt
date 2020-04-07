@@ -25,6 +25,7 @@ import android.net.Uri
 import android.os.Build
 import android.support.v4.content.FileProvider
 import com.sd.mvc.intercept_video_link.BuildConfig
+import com.sd.mvc.intercept_video_link.utils.LogUtils
 
 
 class FileVideoActivity : BaseActivity() {
@@ -87,9 +88,9 @@ class FileVideoActivity : BaseActivity() {
                 .flatMap {
                     //是视频文件夹   可以遍历
                     if (file.isDirectory) {
-                        Log.e("File", "fileName:${file.name}")
+                        LogUtils.e( "fileName:${file.name}")
                         file.listFiles(FileFilter {
-                            Log.e("File", "fileName:${it.name}")
+                            LogUtils.e( "fileName:${it.name}")
                             mediaList.add(MediaBean(it.absolutePath, getFileThumbnail(it.absolutePath), it.name, getFileSize(it)))
                             true
                         })

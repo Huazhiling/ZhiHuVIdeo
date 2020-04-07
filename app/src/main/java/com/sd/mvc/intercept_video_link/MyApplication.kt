@@ -1,17 +1,23 @@
 package com.sd.mvc.intercept_video_link
 
+import android.app.Activity
 import android.app.Application
+import android.content.ClipboardManager
+import android.content.Context
+import android.os.Bundle
 import cn.jiguang.analytics.android.api.JAnalyticsInterface
 import com.blankj.utilcode.util.SPUtils
 import com.blankj.utilcode.util.Utils
 import com.sd.mvc.intercept_video_link.bean.AppInfo
 import com.sd.mvc.intercept_video_link.common.Constant.APPINFO
 import com.sd.mvc.intercept_video_link.utils.JsonHelper
+import com.sd.mvc.intercept_video_link.utils.LogUtils
 import java.util.ArrayList
 
 class MyApplication : Application() {
 
     private lateinit var appInfo: AppInfo
+
     override fun onCreate() {
         super.onCreate()
         Utils.init(this)

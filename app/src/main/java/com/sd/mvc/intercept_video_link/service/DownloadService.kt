@@ -85,7 +85,6 @@ class DownloadService : IntentService("download") {
         }
     }
 
-    @Throws(JSONException::class)
     private fun createNotification(message: String, path: String) {
         val builder: NotificationCompat.Builder
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -95,7 +94,7 @@ class DownloadService : IntentService("download") {
             builder = NotificationCompat.Builder(baseContext)
         }
         val msgIntent = Intent(Intent.ACTION_VIEW)
-        val uri = FileProvider.getUriForFile(baseContext, MyApplication.getAppContext()?.packageName + ".fileprovider", videoFile)
+        val uri = FileProvider.getUriForFile(baseContext, MyApplication.getAppContext()?.packageName + ".fileProvider", videoFile)
         msgIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         msgIntent.setDataAndType(uri, "video/*")
         val mPendingIntent = PendingIntent.getActivity(baseContext, 1, msgIntent, PendingIntent.FLAG_CANCEL_CURRENT)

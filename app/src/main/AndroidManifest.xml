@@ -13,6 +13,8 @@
 
     <!-- Optional. Required for location feature -->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> <!-- 用于开启 debug 版本的应用在 6.0 系统上的层叠窗口权限 -->
+    <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -66,6 +68,10 @@
         <activity android:name=".activity.SupportActivity" />
         <activity android:name=".activity.FileVideoActivity" />
         <activity android:name=".activity.UpdateLogActivity" />
+        <activity android:name=".activity.VersionLogActivity" />
+        <activity
+            android:name=".activity.ReceptionActivity"
+            android:theme="@style/Theme.AppCompat.Dialog" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

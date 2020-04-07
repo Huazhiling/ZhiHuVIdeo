@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/status_bar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/white" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_below="@id/status_bar"
+        android:background="@color/white">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/version_log"
+            android:textColor="@color/black_gray"
+            android:textSize="17sp" />
+
+        <ImageView
+            android:id="@+id/ver_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="4dp"
+            android:scaleType="center"
+            android:src="@drawable/back_icon_black" />
+    </RelativeLayout>
+    <TextView
+        android:text="1.由于新版本AndroidQ (10) 中已禁止后台获取剪贴板内容, 所以在当前版本中采用1对1解析, 复制链接后直接返回App即可, 目前暂不支持多条数据同时解析, 请等待下次发布"
+        android:paddingLeft="17dp"
+        android:paddingRight="17dp"
+        android:textSize="17sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:text="2.目前仅支持在首页点击下载队列时解析数据, 如果目前已处于下载队列页面, 请返回首页重新进入"
+        android:paddingLeft="17dp"
+        android:paddingRight="17dp"
+        android:textSize="17sp"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:text="3.由于近期面临失业危机, 新版预计发布的用户系统以及下载管理暂不发布, 请期待后续的版本迭代"
+        android:paddingLeft="17dp"
+        android:paddingRight="17dp"
+        android:textSize="17sp"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>

@@ -8,10 +8,4 @@
     android:gravity="center"
     android:paddingLeft="30dp"
     android:paddingRight="30dp">
-
-    <ProgressBar
-        android:id="@+id/load_url"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:indeterminateTint="@color/white" />
 </LinearLayout>

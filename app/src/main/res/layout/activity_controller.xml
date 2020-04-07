@@ -49,6 +49,18 @@
         app:sRightTextString="极简白"
         app:sUseRipple="false" />
 
+    <com.allen.library.SuperTextView
+        android:id="@+id/app_backstage"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:onClick="onClick"
+        android:visibility="gone"
+        app:sLeftTextColor="@color/window_hint_gray"
+        app:sLeftTextString="@string/main_service"
+        app:sRightTextColor="@color/edit_gray"
+        app:sRightTextSize="11sp"
+        app:sRightTextString="已关闭" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="44dp"
@@ -116,9 +128,18 @@
         app:sRightTextSize="11sp" />
 
     <com.allen.library.SuperTextView
-        android:id="@+id/app_update_log"
+        android:id="@+id/app_version_log"
         android:layout_width="match_parent"
         android:layout_marginTop="20dp"
+        android:layout_height="44dp"
+        android:onClick="onClick"
+        app:sLeftTextColor="@color/window_hint_gray"
+        app:sLeftTextString="@string/version_log"
+        app:sRightTextColor="@color/edit_gray"
+        app:sRightTextSize="11sp" />
+    <com.allen.library.SuperTextView
+        android:id="@+id/app_update_log"
+        android:layout_width="match_parent"
         android:layout_height="44dp"
         android:onClick="onClick"
         app:sLeftTextColor="@color/window_hint_gray"

@@ -11,4 +11,5 @@
     <color name="black_gray">#595971</color>
     <color name="select_gray">#7A7A7C</color>
     <color name="window_hint_gray">#99000000</color>
+    <color name="window_transparent">#00000000</color>
 </resources>

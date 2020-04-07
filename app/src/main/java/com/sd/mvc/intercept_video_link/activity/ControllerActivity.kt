@@ -3,8 +3,11 @@ package com.sd.mvc.intercept_video_link.activity
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.*
+import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.os.IBinder
+import android.provider.Settings
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
@@ -46,6 +49,7 @@ class ControllerActivity : BaseActivity() {
     private var isBindService = false
     //service交互用
     private var urlService: UrlService? = null
+    private lateinit var clipManager: ClipboardManager
 
     override fun getLayoutId(): Int {
         return R.layout.activity_controller
@@ -55,6 +59,7 @@ class ControllerActivity : BaseActivity() {
         super.initView()
         historyList = ArrayList()
         EventBus.getDefault().register(this)
+        clipManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         var bindIntent = Intent(this, UrlService::class.java)
         if (SPUtils.getInstance().getString(HISTORY_LIST) == "") {
             SPUtils.getInstance().put(HISTORY_LIST, JsonHelper.jsonToString(HashMap<String, HistoryBean>()))
@@ -89,6 +94,7 @@ class ControllerActivity : BaseActivity() {
             R.id.app_theme -> {
                 ToastUtils.showShort("暂未开放")
             }
+
 //            查看当前
             R.id.app_current_record -> {
                 startActivityCurrentVideoInfo()
@@ -130,6 +136,11 @@ class ControllerActivity : BaseActivity() {
                     ToastUtils.showShort(R.string.data_chear_cache_failed)
                 }
             }
+
+            R.id.app_version_log -> {
+                startActivity(Intent(baseContext, VersionLogActivity::class.java))
+            }
+
             R.id.app_update_log -> {
                 startActivity(Intent(baseContext, UpdateLogActivity::class.java))
             }
@@ -137,7 +148,6 @@ class ControllerActivity : BaseActivity() {
             R.id.app_support -> {
                 startActivity(Intent(baseContext, SupportActivity::class.java))
             }
-
         }
     }
 
@@ -160,18 +170,33 @@ class ControllerActivity : BaseActivity() {
             if (service is UrlService.UrlBind) {
                 //获取service  搭建起沟通的桥梁
                 urlService = service.getService()
+                urlService?.createView()
                 urlService?.setParsingCallback(object : ParsingCallback {
                     override fun startActivity(context: Context) {
 //                        startActivityCurrentVideoInfo()
                     }
 
                     override fun analysisSourceCode(primary: String) {
-                        urlService?.createLoadView()
                         //解析数据
                         resolveVideo(primary)
                     }
                 })
 
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        window.decorView.post {
+            var utlSb = StringBuffer()
+            var primary = clipManager.primaryClip.getItemAt(0).text.toString()
+            if (primary != "" && PatternHelper.isHttpUrl(primary)) {
+                if (!primary.substring(0, 8).toLowerCase().contains("https://") && !primary.substring(0, 8).toLowerCase().contains("http://")) {
+                    utlSb.append("http://")
+                }
+                utlSb.append(primary)
+                resolveVideo(utlSb.toString())
             }
         }
     }
@@ -219,19 +244,34 @@ class ControllerActivity : BaseActivity() {
                                         , videoInfo.downLoadUrl)
                             }
                         }
-                        ToastUtils.showShort("添加下载队列成功")
+//                        ToastUtils.showShort("添加下载队列成功")
                         EventBus.getDefault().post(HistoryAddEvent(HistoryBean(null, null, null, null)))
                     } else {
-                        ToastUtils.showShort("没有视频")
+//                        ToastUtils.showShort("没有视频")
                     }
                 }, {
                     LogUtils.e(it.message!!)
-                    ToastUtils.showShort("解析失败")
+//                    ToastUtils.showShort("解析失败")
                 })
     }
 
     override fun onBackPressed() {
         moveTaskToBack(true)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            //申请悬浮窗权限
+            300 -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (!Settings.canDrawOverlays(this@ControllerActivity)) {
+                        app_backstage.setRightString("已关闭")
+                    } else {
+                        app_backstage.setRightString("已开启")
+                    }
+                }
+            }
+        }
     }
 
     private fun startActivityCurrentVideoInfo() {

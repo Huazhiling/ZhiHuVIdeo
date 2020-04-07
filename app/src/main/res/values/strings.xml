@@ -9,7 +9,7 @@
     <string name="main_language">语言</string>
     <string name="document">文件列表</string>
     <string name="main_theme">主题</string>
-    <string name="main_service">后台监听服务</string>
+    <string name="main_service">监听服务</string>
     <string name="main_default_theme">极简白</string>
     <string name="main_default_language">简体中文</string>
     <string name="data_title">数据中心</string>
@@ -21,5 +21,6 @@
     <string name="data_support">支持一下</string>
     <string name="data_chear_cache_success">清除缓存成功</string>
     <string name="data_chear_cache_failed">清除缓存失败</string>
+    <string name="version_log">版本公告</string>
     <string name="update_log">更新日志</string>
 </resources>

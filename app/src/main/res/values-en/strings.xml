@@ -9,7 +9,7 @@
     <string name="main_language">Language</string>
     <string name="document">Documents List</string>
     <string name="main_theme">Theme</string>
-    <string name="main_service">Backstage Services</string>
+    <string name="main_service">Services</string>
     <string name="main_default_theme">Simple White</string>
     <string name="main_default_language">English</string>
     <string name="data_title">Data Center</string>
@@ -21,5 +21,6 @@
     <string name="data_support">Support</string>
     <string name="data_chear_cache_success">Clear cache successfully</string>
     <string name="data_chear_cache_failed">Clear cache failed</string>
+    <string name="version_log">Version Log</string>
     <string name="update_log">Update Log</string>
 </resources>
