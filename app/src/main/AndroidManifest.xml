@@ -69,9 +69,6 @@
         <activity android:name=".activity.FileVideoActivity" />
         <activity android:name=".activity.UpdateLogActivity" />
         <activity android:name=".activity.VersionLogActivity" />
-        <activity
-            android:name=".activity.ReceptionActivity"
-            android:theme="@style/Theme.AppCompat.Dialog" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

@@ -5,6 +5,7 @@ import com.sd.mvc.intercept_video_link.common.Constant.Language.CHINESE
 import com.sd.mvc.intercept_video_link.common.Constant.Language.ENGLISH
 import com.sd.mvc.intercept_video_link.utils.LanguageUtils
 import com.gyf.barlibrary.ImmersionBar
+import com.sd.mvc.intercept_video_link.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_language.*
 
 class LanguageActivity : BaseActivity() {

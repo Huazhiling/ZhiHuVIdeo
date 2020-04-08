@@ -12,6 +12,7 @@ import com.sd.mvc.intercept_video_link.utils.DownloadUtils
 import com.sd.mvc.intercept_video_link.utils.RuleRecyclerLines
 import com.per.rslibrary.IPermissionRequest
 import com.per.rslibrary.RsPermission
+import com.sd.mvc.intercept_video_link.base.BaseActivity
 import com.sd.mvc.intercept_video_link.bean.HistoryBean
 import com.sd.mvc.intercept_video_link.event.CurrentVideoEvent
 import com.sd.mvc.intercept_video_link.utils.RxHelper

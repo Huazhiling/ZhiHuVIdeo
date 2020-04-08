@@ -1,6 +1,7 @@
 package com.sd.mvc.intercept_video_link.activity
 
 import com.sd.mvc.intercept_video_link.R
+import com.sd.mvc.intercept_video_link.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_version_log.*
 
 class VersionLogActivity : BaseActivity() {

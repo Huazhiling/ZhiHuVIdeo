@@ -3,7 +3,6 @@ package com.sd.mvc.intercept_video_link.activity
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.*
-import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.os.IBinder
@@ -16,13 +15,19 @@ import android.widget.Toast
 import com.blankj.utilcode.util.FileUtils.*
 import com.blankj.utilcode.util.SPUtils
 import com.blankj.utilcode.util.ToastUtils
+import com.sd.mvc.intercept_video_link.MyApplication
 import com.sd.mvc.intercept_video_link.R
+import com.sd.mvc.intercept_video_link.base.BaseMVPActivity
+import com.sd.mvc.intercept_video_link.base.BasePresenter
 import com.sd.mvc.intercept_video_link.bean.HistoryBean
 import com.sd.mvc.intercept_video_link.bean.VideoInfo
 import com.sd.mvc.intercept_video_link.common.Constant.HISTORY_LIST
+import com.sd.mvc.intercept_video_link.contract.ControllerContract
 import com.sd.mvc.intercept_video_link.event.HistoryAddEvent
 import com.sd.mvc.intercept_video_link.event.LanguageEvent
 import com.sd.mvc.intercept_video_link.listener.ParsingCallback
+import com.sd.mvc.intercept_video_link.mvp.p.ControllerPresenter
+import com.sd.mvc.intercept_video_link.mvp.v.ControllerView
 import com.sd.mvc.intercept_video_link.service.UrlService
 import com.sd.mvc.intercept_video_link.utils.*
 import io.reactivex.Observable
@@ -40,7 +45,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class ControllerActivity : BaseActivity() {
+class ControllerActivity : BaseMVPActivity<ControllerContract.ControllerPresenter>(),ControllerContract.ControllerView {
     //插入数据库时候的键
     private var primaryKey = ""
     //保存视频信息
@@ -51,6 +56,7 @@ class ControllerActivity : BaseActivity() {
     private var urlService: UrlService? = null
     private lateinit var clipManager: ClipboardManager
 
+
     override fun getLayoutId(): Int {
         return R.layout.activity_controller
     }
@@ -59,7 +65,7 @@ class ControllerActivity : BaseActivity() {
         super.initView()
         historyList = ArrayList()
         EventBus.getDefault().register(this)
-        clipManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        clipManager = MyApplication.getAppContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         var bindIntent = Intent(this, UrlService::class.java)
         if (SPUtils.getInstance().getString(HISTORY_LIST) == "") {
             SPUtils.getInstance().put(HISTORY_LIST, JsonHelper.jsonToString(HashMap<String, HistoryBean>()))
@@ -189,6 +195,7 @@ class ControllerActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         window.decorView.post {
+//            mPresenter.resolveClipData()
             var utlSb = StringBuffer()
             var primary = clipManager.primaryClip.getItemAt(0).text.toString()
             if (primary != "" && PatternHelper.isHttpUrl(primary)) {
@@ -199,6 +206,10 @@ class ControllerActivity : BaseActivity() {
                 resolveVideo(utlSb.toString())
             }
         }
+    }
+
+    override fun initPresenter(): BasePresenter<*, *> {
+        return ControllerPresenter.newInstance()
     }
 
     //
@@ -282,5 +293,13 @@ class ControllerActivity : BaseActivity() {
         var mainIntent = Intent(this, MainActivity::class.java)
         mainIntent.putExtra("primary_key", primaryKey)
         startActivity(mainIntent)
+    }
+
+    override fun success() {
+
+    }
+
+    override fun failed() {
+
     }
 }

@@ -1,4 +1,4 @@
-package com.sd.mvc.intercept_video_link.activity
+package com.sd.mvc.intercept_video_link.base
 
 import android.content.Context
 import android.os.Bundle

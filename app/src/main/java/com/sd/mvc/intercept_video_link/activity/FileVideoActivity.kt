@@ -7,7 +7,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.os.Environment
-import android.util.Log
 import android.view.View
 import com.blankj.utilcode.util.FileUtils.getFileSize
 import com.blankj.utilcode.util.ToastUtils
@@ -25,6 +24,7 @@ import android.net.Uri
 import android.os.Build
 import android.support.v4.content.FileProvider
 import com.sd.mvc.intercept_video_link.BuildConfig
+import com.sd.mvc.intercept_video_link.base.BaseActivity
 import com.sd.mvc.intercept_video_link.utils.LogUtils
 
 
