@@ -28,8 +28,8 @@ class UrlService : Service() {
     private lateinit var clipManager: ClipboardManager
     private lateinit var parCallback: ParsingCallback
     private lateinit var sqlite: SQLiteHelper
-    private lateinit var windowManager : WindowManager
-    private lateinit var loadLayoutParams : WindowManager.LayoutParams
+    private lateinit var windowManager: WindowManager
+    private lateinit var loadLayoutParams: WindowManager.LayoutParams
     private lateinit var loadView: View
     private var isRemove = false
     private var urlBind = UrlBind()
@@ -37,6 +37,7 @@ class UrlService : Service() {
         super.onCreate()
         createClipCallback()
     }
+
     //创建一个1像素的window放置前台当悬浮窗
     fun createView() {
 //        windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -58,19 +59,19 @@ class UrlService : Service() {
 //        loadLayoutParams.windowAnimations = android.R.style.Animation_Translucent
 //        windowManager.addView(loadView, loadLayoutParams)
 //        loadView.let {
-//            clipManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-//            // 开启监听的时候顺便做数据库操作
-//            clipManager.addPrimaryClipChangedListener {
-//                var utlSb = StringBuffer()
-//                var primary = clipManager.primaryClip.getItemAt(0).text.toString()
-//                if (primary != "" && PatternHelper.isHttpUrl(primary)) {
-//                    if (!primary.substring(0, 8).toLowerCase().contains("https://") && !primary.substring(0, 8).toLowerCase().contains("http://")) {
-//                        utlSb.append("http://")
-//                    }
-//                    utlSb.append(primary)
-//                    parCallback.analysisSourceCode(utlSb.toString())
-//                }
-//            }
+        clipManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        // 开启监听的时候顺便做数据库操作
+        clipManager.addPrimaryClipChangedListener {
+            var utlSb = StringBuffer()
+            var primary = clipManager.primaryClip.getItemAt(0).text.toString()
+            if (primary != "" && PatternHelper.isHttpUrl(primary)) {
+                if (!primary.substring(0, 8).toLowerCase().contains("https://") && !primary.substring(0, 8).toLowerCase().contains("http://")) {
+                    utlSb.append("http://")
+                }
+                utlSb.append(primary)
+                parCallback.analysisSourceCode(utlSb.toString())
+            }
+        }
 //        }
     }
 
@@ -89,7 +90,7 @@ class UrlService : Service() {
      */
     @SuppressLint("NewApi")
     private fun createClipCallback() {
-            initSQLite()
+        initSQLite()
     }
 
     override fun onBind(intent: Intent?): IBinder? {

@@ -196,14 +196,16 @@ class ControllerActivity : BaseMVPActivity<ControllerContract.ControllerPresente
         super.onResume()
         window.decorView.post {
 //            mPresenter.resolveClipData()
-            var utlSb = StringBuffer()
-            var primary = clipManager.primaryClip.getItemAt(0).text.toString()
-            if (primary != "" && PatternHelper.isHttpUrl(primary)) {
-                if (!primary.substring(0, 8).toLowerCase().contains("https://") && !primary.substring(0, 8).toLowerCase().contains("http://")) {
-                    utlSb.append("http://")
+            if(Build.VERSION.SDK_INT >= 29){
+                var utlSb = StringBuffer()
+                var primary = clipManager.primaryClip.getItemAt(0).text.toString()
+                if (primary != "" && PatternHelper.isHttpUrl(primary)) {
+                    if (!primary.substring(0, 8).toLowerCase().contains("https://") && !primary.substring(0, 8).toLowerCase().contains("http://")) {
+                        utlSb.append("http://")
+                    }
+                    utlSb.append(primary)
+                    resolveVideo(utlSb.toString())
                 }
-                utlSb.append(primary)
-                resolveVideo(utlSb.toString())
             }
         }
     }
