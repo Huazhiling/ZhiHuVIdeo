@@ -62,7 +62,7 @@ class WebVideoActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         if (video_web !== null) {
-            var webParent = video_web.parent as ViewGroup
+            var webParent = video_web.parent as ViewGroup?
             if (webParent !== null) {
                 webParent.removeView(video_web)
             }

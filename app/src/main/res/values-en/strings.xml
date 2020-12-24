@@ -7,7 +7,9 @@
     <!--主页信息-->
     <string name="main_title">Setting</string>
     <string name="main_language">Language</string>
+    <string name="main_auto">Auto Recognition</string>
     <string name="document">Documents List</string>
+    <string name="description">Description</string>
     <string name="main_theme">Theme</string>
     <string name="main_service">Services</string>
     <string name="main_default_theme">Simple White</string>

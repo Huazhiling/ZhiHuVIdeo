@@ -5,6 +5,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
+    useLibrary 'org.apache.http.legacy'
     signingConfigs {
         config {
             keyAlias 'zhihu'
@@ -102,6 +103,7 @@ dependencies {
     //统计
     implementation 'cn.jiguang.sdk:janalytics:2.1.0'
     implementation 'cn.jiguang.sdk:jcore:1.2.6'
+    implementation 'cn.bmob.android:bmob-sdk:3.7.8'
     //广告
     implementation fileTree(dir: 'libs', include: ['*.aar'])
     testImplementation 'junit:junit:4.12'

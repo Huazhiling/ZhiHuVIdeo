@@ -12,8 +12,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.blankj.utilcode.util.FileUtils.*
-import com.blankj.utilcode.util.SPUtils
+import com.blankj.utilcode.util.FileUtils.deleteDir
+import com.blankj.utilcode.util.FileUtils.getDirSize
 import com.blankj.utilcode.util.ToastUtils
 import com.sd.mvc.intercept_video_link.MyApplication
 import com.sd.mvc.intercept_video_link.R
@@ -22,12 +22,12 @@ import com.sd.mvc.intercept_video_link.base.BasePresenter
 import com.sd.mvc.intercept_video_link.bean.HistoryBean
 import com.sd.mvc.intercept_video_link.bean.VideoInfo
 import com.sd.mvc.intercept_video_link.common.Constant.HISTORY_LIST
+import com.sd.mvc.intercept_video_link.common.Constant.TOKEN
 import com.sd.mvc.intercept_video_link.contract.ControllerContract
 import com.sd.mvc.intercept_video_link.event.HistoryAddEvent
 import com.sd.mvc.intercept_video_link.event.LanguageEvent
 import com.sd.mvc.intercept_video_link.listener.ParsingCallback
 import com.sd.mvc.intercept_video_link.mvp.p.ControllerPresenter
-import com.sd.mvc.intercept_video_link.mvp.v.ControllerView
 import com.sd.mvc.intercept_video_link.service.UrlService
 import com.sd.mvc.intercept_video_link.utils.*
 import io.reactivex.Observable
@@ -37,6 +37,7 @@ import kotlinx.android.synthetic.main.activity_controller.*
 import kotlinx.android.synthetic.main.layout_dialog.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import zlc.season.rxdownload3.core.DownloadConfig.context
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
@@ -45,7 +46,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class ControllerActivity : BaseMVPActivity<ControllerContract.ControllerPresenter>(),ControllerContract.ControllerView {
+class ControllerActivity : BaseMVPActivity<ControllerContract.ControllerPresenter>(), ControllerContract.ControllerView {
     //插入数据库时候的键
     private var primaryKey = ""
     //保存视频信息
@@ -65,29 +66,36 @@ class ControllerActivity : BaseMVPActivity<ControllerContract.ControllerPresente
         super.initView()
         historyList = ArrayList()
         EventBus.getDefault().register(this)
-        clipManager = MyApplication.getAppContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        var bindIntent = Intent(this, UrlService::class.java)
-        if (SPUtils.getInstance().getString(HISTORY_LIST) == "") {
-            SPUtils.getInstance().put(HISTORY_LIST, JsonHelper.jsonToString(HashMap<String, HistoryBean>()))
+        app_auto.setSwitchCheckedChangeListener { compoundButton, isChecked ->
+            if (isChecked) {
+                //
+                if (SPUtils.getString(TOKEN).isEmpty()) {
+                    createHintDialog("请先登录").show()
+                    app_auto.switchIsChecked = false
+                }
+            }
         }
-        isBindService = bindService(bindIntent, urlConnection, Context.BIND_AUTO_CREATE)
-        app_clear_cache.setRightString(getDirSize(cacheDir))
     }
 
-    override fun initData() {
-        createHintDialog(this, getString(R.string.app_help), getString(R.string.app_dialog_title)).show()
-    }
-
-    private fun createHintDialog(context: Context, msg: String, title: String): Dialog {
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.layout_dialog, null)
-        var mDialog = Dialog(context, R.style.hint_dialog)
-        dialogView.dialog_title.text = title
-        dialogView.dialog_content.text = msg
+    private fun createHintDialog(content: String): Dialog {
+        val dialogView = LayoutInflater.from(baseContext).inflate(R.layout.layout_dialog, null)
+        var mDialog = Dialog(this, R.style.hint_dialog)
+        dialogView.dialog_content.text = content
         dialogView.dialog_dismiss.setOnClickListener { mDialog.dismiss() }
         mDialog.setContentView(dialogView)
         //一定要在setContentView之后调用，否则无效
         mDialog.window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         return mDialog
+    }
+
+    override fun initData() {
+        clipManager = MyApplication.getAppContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        var bindIntent = Intent(this, UrlService::class.java)
+        if (SPUtils.getString(HISTORY_LIST) == "") {
+            SPUtils.putString(HISTORY_LIST, JsonHelper.jsonToString(HashMap<String, HistoryBean>()))
+        }
+        isBindService = bindService(bindIntent, urlConnection, Context.BIND_AUTO_CREATE)
+        app_clear_cache.setRightString(getDirSize(cacheDir))
     }
 
     fun onClick(view: View) {
@@ -195,9 +203,12 @@ class ControllerActivity : BaseMVPActivity<ControllerContract.ControllerPresente
     override fun onResume() {
         super.onResume()
         window.decorView.post {
-//            mPresenter.resolveClipData()
-            if(Build.VERSION.SDK_INT >= 29){
+            //            mPresenter.resolveClipData()
+            if (Build.VERSION.SDK_INT >= 29) {
                 var utlSb = StringBuffer()
+                if(clipManager.primaryClip === null){
+                    return@post
+                }
                 var primary = clipManager.primaryClip.getItemAt(0).text.toString()
                 if (primary != "" && PatternHelper.isHttpUrl(primary)) {
                     if (!primary.substring(0, 8).toLowerCase().contains("https://") && !primary.substring(0, 8).toLowerCase().contains("http://")) {

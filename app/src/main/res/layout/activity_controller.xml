@@ -27,6 +27,16 @@
         android:background="@color/colorGray" />
 
     <com.allen.library.SuperTextView
+        android:id="@+id/app_auto"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        app:sSwitchIsChecked="false"
+        app:sRightViewType="switchBtn"
+        android:onClick="onClick"
+        app:sLeftTextColor="@color/window_hint_gray"
+        app:sLeftTextString="@string/main_auto"/>
+
+    <com.allen.library.SuperTextView
         android:id="@+id/app_language"
         android:layout_width="match_parent"
         android:layout_height="44dp"
@@ -144,6 +154,15 @@
         android:onClick="onClick"
         app:sLeftTextColor="@color/window_hint_gray"
         app:sLeftTextString="@string/update_log"
+        app:sRightTextColor="@color/edit_gray"
+        app:sRightTextSize="11sp" />
+    <com.allen.library.SuperTextView
+        android:id="@+id/app_description"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:onClick="onClick"
+        app:sLeftTextColor="@color/window_hint_gray"
+        app:sLeftTextString="@string/description"
         app:sRightTextColor="@color/edit_gray"
         app:sRightTextSize="11sp" />
     <com.allen.library.SuperTextView

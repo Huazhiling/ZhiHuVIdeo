@@ -2,68 +2,51 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="80dp"
-        android:layout_marginRight="40dp"
-        android:layout_marginBottom="80dp"
-        android:layout_height="match_parent">
-        <FrameLayout
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:background="@drawable/shape_round_white_12dp"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:background="@drawable/shape_round_white_12dp"
+            android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/dialog_title"
+                    android:id="@+id/dialog_content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:textColor="@color/colorBlack"
-                    android:text="温馨提醒" />
-
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:fillViewport="true">
-
-                    <TextView
-                        android:id="@+id/dialog_content"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="25dp"
-                        android:layout_marginRight="25dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginBottom="40dp"
-                        android:lineSpacingExtra="5dp"
-                        android:textColor="@color/window_hint_gray"
-                        android:textSize="15sp" />
-                </ScrollView>
-
-                <TextView
-                    android:id="@+id/dialog_dis_hint"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginRight="25dp"
                     android:layout_marginBottom="20dp"
                     android:gravity="center"
                     android:lineSpacingExtra="5dp"
-                    android:text="3s后自动关闭"
-                    android:textColor="@color/edit_gray"
-                    android:textSize="11sp" />
-            </LinearLayout>
-            <ImageView
-                android:id="@+id/dialog_dismiss"
-                android:layout_width="wrap_content"
-                android:layout_gravity="center_horizontal|bottom"
-                android:padding="10dp"
-                android:src="@drawable/dialog_delete"
-                android:layout_height="wrap_content" />
-        </FrameLayout>
+                    android:textColor="@color/window_hint_gray"
+                    android:textSize="15sp" />
+            <TextView
+                android:id="@+id/dialog_dis_hint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:gravity="center"
+                android:lineSpacingExtra="5dp"
+                android:text="3s后自动关闭"
+                android:textColor="@color/edit_gray"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/dialog_dismiss"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:padding="10dp"
+            android:src="@drawable/dialog_delete" />
     </LinearLayout>
 </LinearLayout>

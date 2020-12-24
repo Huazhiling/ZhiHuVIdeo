@@ -3,11 +3,13 @@
     <string name="base_url">https://lens.zhihu.com/</string>
     <!--<string name="base_url">https://vdn2.vzuu.com/</string>-->
     <string name="app_dialog_title">狐Video使用指南</string>
-    <string name="app_help">第一步：打开狐Video\n第二步：打开知乎App（打开知乎网站）\n第三步：复制带有视频的帖子链接\n第四步：返回狐Video，选择喜欢的视频下载</string>
+    <string name="app_help">第一步：打开狐Video\n\n第二步：打开知乎App（打开知乎网站）\n\n第三步：复制带有视频的帖子链接\n\n第四步：返回狐Video，选择喜欢的视频下载</string>
     <!--主页信息-->
     <string name="main_title">设置</string>
     <string name="main_language">语言</string>
+    <string name="main_auto">自动识别</string>
     <string name="document">文件列表</string>
+    <string name="description">使用说明</string>
     <string name="main_theme">主题</string>
     <string name="main_service">监听服务</string>
     <string name="main_default_theme">极简白</string>
